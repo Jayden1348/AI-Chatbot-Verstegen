@@ -1,0 +1,552 @@
+/**
+ * Theme Name: Verstegen Compro
+ * Theme URI: https://verstegen.nl/
+ * Author: MI - Crebos 
+ * Author URI: https://verstegen.nl/
+ * Description: Custom theme for Verstegen
+ * Version: 1.0.0
+ * Text Domain: themedomain
+ * Tags: custom design, custom development
+ */
+
+@import url(https://db.onlinewebfonts.com/c/e7d21c0fe0214c0e242e4a757f373782?family=DIN+Next+LT+W04+Heavy+Condensed);
+
+@import url(https://db.onlinewebfonts.com/c/638d0170b97e87c71704ba87f2e93775?family=Quintus+Bold_TRIAL);
+
+.section-content-hero {
+    margin-top: -80px;
+}
+
+.content-slider-custom .content-wrapper.no-borders {
+    box-shadow: none;
+}
+
+.main-header .container .col .logo-header img {
+	height: 110px !important;
+}
+
+.section-content-video-youtube-titled {
+	padding-top: 75px;
+	padding-bottom: 75px;
+    background: #f9f9f9;
+}
+
+.section-content-video-youtube-titled .container {
+	background: var(--lichtgroen-50-) 0% 0% no-repeat padding-box;
+background: #DEEFEA 0% 0% no-repeat padding-box;
+box-shadow: 0px 0px 8px #00000026;
+border-radius: 20px;
+    display: flex;
+    padding-right: 0;
+
+}
+
+.section-content-video-youtube-titled .col-md-8 {
+	width: 80%;
+    min-height: 450px;
+}
+
+.section-content-video-youtube-titled .video-wrapper {
+
+    height: 100%;
+}
+
+.section-content-video-youtube-titled .video-wrapper iframe {
+	    height: 100%;
+    width: 100%;
+}
+
+.section-content-video-youtube-titled .col-md-4 {
+	width: 30%;
+}
+
+h1,h2,h3,h4,h5,h6 {
+font-family: "DIN Next LT W04 Heavy Condensed";
+text-transform: uppercase;
+}
+
+.section-content-hero .container .section-content-hero-short-desc {
+text-transform: none;
+}
+
+.section-content-video-youtube-titled h2 {
+    font-family: "DIN Next LT W04 Heavy Condensed";
+    font-size: 72px;
+    color: #006947;
+    letter-spacing: 0px;
+    text-transform: uppercase;
+    margin-top: 15px;
+    margin-left: 20px;
+    margin-right: 20px;
+}
+
+.archive .section-content-hero .container .section-content-hero-title,
+.section-content-cta .container .with-box .section-content-cta-title, .section-content-cta .container .with-box .section-content-cta-short-desc, .section-content-fullwidth-custom .content-wrapper .main-content__title {
+    font-family: "DIN Next LT W04 Heavy Condensed", sans-serif;
+    text-transform: uppercase;
+}
+
+.container-fullwidth .content-block.image-left .img-content {
+    border-bottom-right-radius: 20px;
+    border-top-right-radius: 20px;
+}
+.container-fullwidth .content-block.image-right .img-content {
+    border-bottom-left-radius: 20px !important;
+    border-top-left-radius: 20px !important;
+}
+
+ .section-content-news-archive .container .content-news-archive-right .wrapper-card-news .card-news-content-title {
+     font-family: "DIN Next LT W04 Heavy Condensed";
+    text-transform: uppercase;
+    color: #005B43;
+    font-size: 20px;
+ }
+
+@media (max-width: 767px) { 
+
+    .section-content-video-youtube-titled .container {
+        flex-flow: column;
+    }
+
+    .section-content-video-youtube-titled .col-md-4 {
+        width: 100%;
+    }
+
+	.section-content-video-youtube-titled .col-md-8 {
+    width: 100%;
+    min-height: auto;
+    }
+
+    .section-content-video-youtube-titled .video-wrapper iframe {
+        min-height: 300px;
+    }
+    
+    .section-content-video-youtube-titled .container {
+         padding-right: 16px; 
+	}
+
+	 .main-header .container .col .logo-header img {
+        height: 40px !important;
+    }
+
+		.section-content-video-youtube-titled h2 {
+    	font-size: 30px !important; 
+    }
+}
+
+
+@media (max-width: 767px) { 
+	.main-header .wrapper-btn {
+		display: none !important;
+	}
+}
+
+@media (max-width: 767px) {
+    .section-content-hero .container .section-content-hero-title {
+        font-size: 36px !important;
+    }
+}
+
+.header {
+	margin: auto;
+	background: #FFFFFF 0% 0% no-repeat padding-box;
+	border-radius: 20px;
+	align-content: space-evenly;
+	max-width: 1440px;
+	top: 10px;
+}
+
+.main-header .container {
+	display: grid;
+	grid-template-columns: 17% auto;
+	margin-inline: auto 0;
+	max-width: 1290px;
+}
+
+.main-header .container .col:last-child .header-menu .header-nav {
+	gap: 35px;
+}
+
+.main-header .container .col:last-child .header-menu .header-nav li {
+	font-family: "Prompt", sans-serif;
+	font-style: normal;
+	font-weight: normal;
+	letter-spacing: normal;
+	color: #005B43;
+}
+
+.main-header .container .col:last-child {
+	justify-content: space-between;
+}
+
+.wrapper-btn {
+	display: flex;
+	gap: 0;
+}
+
+ .wrapper-btn .btn-style-1 {
+	border: solid 1px #D4002A;
+	color: #D4002A;
+	line-height: normal;
+	padding: 7px 15px;
+}
+
+.btn-style-1.active {
+	border: solid 1px #D4002A;
+	color: white;
+}
+
+.wrapper-btn .btn-style-1:hover {
+	color: white;
+}
+
+.wrapper-btn a:first-child {
+	border-top-right-radius: 0;
+	border-bottom-right-radius: 0;
+}
+
+.wrapper-btn a:nth-child(2) {
+	border-radius: 0; /* No border-radius for the second button */
+}
+
+ .wrapper-btn a:last-child {
+	border-top-left-radius: 0;
+	border-bottom-left-radius: 0;
+}
+
+ .wpml-ls ul li a {
+	color: #005B43;
+}
+
+ .wpml-ls ul li {
+	color: #005B43;
+}
+
+ .wpml-ls ul li.wpml-ls-current-language a {
+	color: #005B43;
+}
+
+.content-3cards .main-content-inner {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    flex-basis: auto;
+}
+
+.content-3cards  .has-image .main-content-inner {
+    flex-basis: fit-content;
+}
+
+.content-3cards .main-content {
+    display: flex !important;
+    flex-direction: column !important;
+}
+
+.content-3cards .main-content-inner__text { 
+	flex-grow: 1;
+    -webkit-line-clamp: none;
+
+}
+
+.section-content-instagram {
+	background-color: #DEEFEA;
+}
+
+.main-footer .footer-top {
+	background-color: white;
+}
+
+.main-footer .footer-top .container .col .heading {
+	font-size: 32px;
+	font-family: "DIN Next LT W04 Heavy Condensed";
+	overflow: visible;
+	text-transform: uppercase;
+	color: #005B43;
+	line-height: 40px;
+	margin-bottom: 20px;
+}
+
+.main-footer .footer-top .container .col .footer-menu .footer-nav li a {
+	color: #005B43;
+	font-size: 18px;
+}
+
+.main-footer .footer-top .container .col .footer-menu .footer-nav li:not(:last-child) {
+	margin-bottom: 15px;
+}
+
+.modal-cards {
+    display: none; /* Hidden by default */
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); /* Black background with opacity */
+}
+.modal-cards .modal-content {
+    background-color: #fff;
+    margin: 10% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+    max-width: 600px;
+    position: relative;
+    border-radius: 8px;
+	color: #006947;
+}
+.modal-cards .modal-content .close {
+    position: absolute;
+    top: 10px;
+    right: 20px;
+    font-size: 24px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.content-3cards .main-content-inner__title {
+	font-size: 32px;
+	font-family: "DIN Next LT W04 Heavy Condensed";
+	overflow: visible;
+	text-transform: uppercase;
+}
+
+@media (max-width: 767px) {
+    .content-3cards .main-content-inner__title {
+        font-size: 28px !important;
+		min-height: 58px;
+    }
+
+	.content-3cards .main-content-inner__text {
+    -webkit-line-clamp: 3;
+	}
+}
+
+
+.content-3cards .main-content-inner__text p, .page-id-5619 .content-3cards .main-content-inner__text p {
+	color: #006947;
+	word-spacing: -2px;
+}
+
+.content-3cards .main-content-inner, .page-id-5619 .content-3cards .main-content-inner {
+	padding: 36px;
+}
+
+.content-3cards .main-content .image, .page-id-5619 .content-3cards .main-content .image {
+	margin-top: 0px; 
+}
+
+@media (max-width: 767px) { 
+
+.section-content-block-fullwidth .container .wrapper-content .section-content-block-fullwidth-title.text-center {
+    font-size: 38px;
+    line-height: 38px;
+}
+}
+
+.section-content-overview-list-certificaten .container .certificaten-overview-title, .section-content-accordion .main-content__title, .section-content-slider-reviews .container .slider-reviews-title, .section-content-block-fullwidth .container .wrapper-content .section-content-block-fullwidth-title.text-center {
+	font-family: "DIN Next LT W04 Heavy Condensed";
+}
+
+.section-content-recepten-archive .container .content-recepten-archive-left .filter-holder .filter-cat-title, .section-content-recepten-single .wrapper-recepten-detail .container .recepten-detail-right-title,
+.section-content-recepten-single .wrapper-recepten-info .recepten-info-title, .recepten-detail-right-title, .content-block .main-content__title {
+    font-family: "DIN Next LT W04 Heavy Condensed";
+    text-transform: uppercase;
+}
+
+.section-content-recepten-archive .container .content-recepten-archive-right .wrapper-card-recepten .card-recepten-content-title {
+font-family: "DIN Next LT W04 Heavy Condensed";
+    text-transform: uppercase;
+    color: #005B43;
+    font-size: 20px;
+}
+
+.content-block .main-content__title {
+    font-size: 32px;
+}
+
+.section-content-recepten-archive .container .content-recepten-archive-right .content-recepten-archive-title {
+    font-family: "DIN Next LT W04 Heavy Condensed";
+        text-transform: uppercase;
+    color: #005B43;
+}
+
+.footer-bottom .socials a {
+text-decoration: none;
+    background-color: #cd0b35;
+    border-radius: 3px;
+    padding: 5px;
+    display: -webkit-inline-box;
+    display: -webkit-inline-flex;
+    display: -moz-inline-box;
+    display: -ms-inline-flexbox;
+    display: inline-flex;
+}
+
+.footer-bottom .socials img {
+    width: 26px;
+    height: 26px;
+}
+
+.footer-bottom .payoff {
+max-width: 400px;
+    height: auto !important;
+    }
+    
+.main-footer .footer-top .container .col .subtitle {
+    color: #005B43;
+}
+
+.section-content-hero .container .section-content-hero-title, .section-content-hero .container .section-content-hero-short-desc {
+    text-shadow: none;
+}
+
+.section-content-recepten-single .wrapper-recepten-info .recepten-info-title {
+color: #005B43;
+}
+
+.section-content-recepten-single .wrapper-recepten-detail .container .recepten-detail-right {
+color: #005B43;
+}
+
+.section-content-recepten-single .wrapper-recepten-detail {
+background: white;
+}
+
+.archive .section-content-hero .container .section-content-hero-title,.archive .section-content-hero .container .section-content-hero-short-desc {
+    text-shadow: 2px 3px 15px #000;
+}
+
+.section-content-hero .container .section-content-hero-title.shadow, .section-content-hero .container .section-content-hero-short-desc.shadow {
+    text-shadow: 0px 0px 20px #000000C7;
+}
+
+
+#newsletterSignupModel .subtitle {
+    color: #646464;
+}
+
+#newsletterSignupModel #mc-embedded-subscribe {
+    padding: 10px 16px;
+    background: #006947;
+    border-radius: 8px;
+    border: 0px;
+    color: #fff !important;
+    text-decoration: none;
+    margin-top: 20px;
+    width: 100%;
+}
+
+#newsletterSignupModel #mc-embedded-subscribe:hover {
+    background: #004d36;
+}
+
+#newsletterSignupModel input:not(#mc-embedded-subscribe) {
+    padding: 12px 40px 12px 12px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    outline: 0;
+    color: #646464;
+    width: 100%;
+    box-sizing: border-box;
+    margin-bottom: 20px;
+}
+
+#newsletterSignupModel .js-btn-close {
+	display: none;
+}
+
+#newsletterSignupModel .input-group ul {
+    padding: 0;
+    list-style-type: none;
+    accent-color: #006947;
+}
+
+#newsletterSignupModel #mc_embed_signup input:not(#mc-embedded-subscribe).av-checkbox.gdpr {
+    border: 0;
+    margin-bottom: 0;
+    margin-right: 20px;
+}
+
+#newsletterSignupModel .input-group li input {
+    width: -webkit-fit-content !important;
+    width: -moz-fit-content !important;
+    width: fit-content !important;
+    margin: 0 10px 0 0;
+}
+
+#newsletterSignupModel input:not(#mc-embedded-subscribe).datepart.datepart.datepart.datepart,
+            #newsletterSignupModel input:not(#mc-embedded-subscribe).av-checkbox.gdpr {
+                width: fit-content;
+            }
+
+#newsletterSignupModel #mc_embed_signup fieldset {
+    border: 0;
+}
+
+
+#newsletterSignupModel input:hover {
+    border: 1px solid #999;
+}
+
+#newsletterSignupModel input:focus {
+    border: 1px solid #999;
+    box-shadow: 0px 0px 0px 4px rgba(0, 0, 0, 0.1);
+}
+
+#newsletterSignupModel #mce-success-response {
+    padding: 10px;
+    border-radius: 10px;
+    color: white;
+    background: seagreen;
+}
+
+#newsletterSignupModel #mce-error-response {
+    padding: 10px;
+    border-radius: 10px;
+    color: white;
+    background: red;
+}
+
+.section-content-overview-list-certificaten {
+	background: white;
+}
+
+.section-content-overview-list-certificaten .container .certificaten-overview-title {
+	    color: #006947;
+}
+
+.section-content-overview-list-certificaten .container .wrapper-certificaten .certificaten-list {
+    margin-top: 24px;
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: flex
+;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -webkit-flex-direction: column;
+    -moz-box-orient: vertical;
+    -moz-box-direction: normal;
+    -ms-flex-direction: column;
+    flex-direction: column;
+    border-radius: 16px;
+    background: #fff;
+    overflow: hidden;
+    position: relative;
+    -webkit-box-shadow: 0px 2px 4px 0px rgba(16, 24, 40, .2);
+    box-shadow: 0px 2px 4px 0px rgba(16, 24, 40, .2);
+    -webkit-transition: .3s all ease-in-out;
+    -moz-transition: .3s all ease-in-out;
+    transition: .3s all ease-in-out;
+    height: -webkit-calc(100% - 30px);
+    height: -moz-calc(100% - 30px);
+    height: calc(100% - 30px);
+}
+
+.section-content-slider-reviews .container .slick-slide .slider-reviews-item {
+    background: #F9F1E6;
+    border-radius: 20px;
+}
