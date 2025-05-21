@@ -4414,8 +4414,20 @@
         <h2>
           <div class="prompt">Waar kan ik je mee helpen?</div>
         </h2>
-        <input type="text" id="userInput" class="input-line" placeholder="Typ hier je vraag..." style="width: 100%; height: 2.5em; font-size: 1.1em;">
-        
+        <div style="display: flex; gap: 1em; align-items: center; margin-bottom: 1.5em;">
+<input type="text" id="userInput" class="input-line" placeholder="Typ hier je vraag..." style="
+  width: 100%;
+  height: 1.5em;
+  font-size: 1.1em;
+  padding: 0.75em 1em;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  background-color: #f4f4f4;
+  color: #333;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  outline: none;
+  transition: border 0.2s ease, box-shadow 0.2s ease;
+">        
         <button onclick="askQuestion()" style="
         background-color: #b21f24;   /* Verstegen-rood */
         color: white;
@@ -4426,23 +4438,31 @@
         border-radius: 8px;
         cursor: pointer;
         box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        margin-top:1.5em;
+        margin-bottom: 1.5em;
         transition: background-color 0.3s ease, transform 0.2s ease;
         ">
         Stuur
         </button>
-        <h3 style="margin-top: 2em; font-weight: bold; color: #b21f24;">Antwoord:</h3>
+        </div>
+        <!-- <h3 style="margin-top: 2em; font-weight: bold; color: #b21f24;">Antwoord:</h3> -->
+<h3 id="answerHeading" style="display: none; margin-top: 0; font-weight: bold; color: #b21f24;">
+  Antwoord:
+</h3>
 
 <div id="chatWindow" style="
+display:none;
   margin-top: 0;
   background-color: #f4f4f4;
   border: 1px solid #ddd;
   border-radius: 10px;
-  padding: 1em;
+  padding: 0.5em;
   max-height: 300px;
   overflow-y: auto;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 ">
   <div id="response" style="
+  display:none;
     background-color: white;
     padding: 0.75em 1em;
     border-radius: 8px;
@@ -4464,9 +4484,10 @@
     const responseDiv = document.getElementById('response');
     const question = input.value.trim();
     if (!question) return;
-
-    responseDiv.innerHTML = "Even geduld...";
-
+    chatWindow.style.display = 'block';
+    response.style.display = 'block';
+    answerHeading.style.display = "none";
+    responseDiv.innerHTML = "Kruidje denkt na, een moment geduld aub...";
     const res = await fetch("/ask", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -4474,6 +4495,8 @@
     });
 
     const data = await res.json();
+    answerHeading.style.display = 'block';
+
     responseDiv.innerHTML = data.answer || "Er ging iets mis.";
   }
 </script>
@@ -5079,7 +5102,7 @@
         </div><iframe style="display: none;" src="./static/saved_resource(1).html"></iframe>
     </div><img id="CookiebotSessionPixel" src="./static/1.gif" alt="Cookiebot session tracker icon loaded"
         data-cookieconsent="ignore" style="display: none;">
-        <script>
+        <!-- <script>
     function askQuestion() {
         const question = document.querySelector(".input-line").value;
         document.getElementById("response").innerText = "Bezig met nadenken...";
@@ -5100,7 +5123,7 @@
             document.getElementById("response").innerText = "Er ging iets mis.";
         });
     }
-</script>
+</script> -->
 
 </body>
 
