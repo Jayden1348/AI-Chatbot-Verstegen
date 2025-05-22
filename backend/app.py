@@ -34,7 +34,7 @@ def ask():
 
     try:
         response = ollama.chat(
-            model="openchat",  # or the name of the model you pulled
+            model="openchat",  
             messages=[
                 {"role": "system", "content": "Beantwoord alleen vragen over de CAO van Verstegen. "
                 "Vakantie, contracten, loonstroken en jaaropgaven zijn te vinden in de HRToday app. "},
