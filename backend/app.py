@@ -1,10 +1,10 @@
 from flask import Flask, request, jsonify, send_from_directory
 from sentence_transformers import SentenceTransformer
 import chromadb
-import json
-import requests
+import ollama
 
-app = Flask(__name__,   static_folder="../frontend/static",  
+app = Flask(__name__,  
+    static_folder="../frontend/static",  
     template_folder="../frontend"  
     )
 
@@ -33,22 +33,15 @@ def ask():
     prompt = f"Context:\n{context}\n\nVraag: {question}\nAntwoord in het Nederlands:"
 
     try:
-        response = requests.post(
-            "http://localhost:11434/api/generate",
-            json={"model": "openchat", "prompt": prompt},
-            stream=True
+        response = ollama.chat(
+            model="openchat",  # or the name of the model you pulled
+            messages=[
+                {"role": "system", "content": "Beantwoord alleen vragen over de CAO van Verstegen. "
+                "Vakantie, contracten, loonstroken en jaaropgaven zijn te vinden in de HRToday app. "},
+                {"role": "user", "content": prompt}
+            ]
         )
-
-        full_response = ""
-        for line in response.iter_lines():
-            if line:
-                try:
-                    json_data = json.loads(line.decode("utf-8"))
-                    full_response += json_data.get("response", "")
-                except json.JSONDecodeError:
-                    continue
-
-        return jsonify({"answer": full_response.strip()})
+        return jsonify({"answer": response['message']['content'].strip()})
     except Exception as e:
         return jsonify({"answer": f"Er ging iets mis: {str(e)}"}), 500
 
