@@ -4386,7 +4386,8 @@
                         <div class="wrapper-btn">
                             <a href="https://verstegen.nl/" class="btn-style-1 active"> Consument</a>
                             <a href="https://professioneel.verstegen.nl/" class="btn-style-1 "> Professional</a>
-                            <a href="https://industrie.verstegen.nl/" class="btn-style-1 "> Industrie</a>
+                            <!-- <a href="https://industrie.verstegen.nl/" class="btn-style-1 "> Industrie</a> -->
+                            <a href="/login" class="btn-style-1">Inloggen</a>
                         </div>
                     </div>
                 </div>
@@ -4405,17 +4406,17 @@
     </div>
 
     <div class="section-content-block-fullwidth bg-dark-white">
-  <div class="container">
-    <div class="wrapper-content">
-      <h1 class="section-content-hero-title">Stel je vraag aan onze AI chatbot Kruidje</h1>
-      <h3 class="section-content-block-fullwidth-subtitle text-center"></h3>
+        <div class="container">
+            <div class="wrapper-content">
+                <h1 class="section-content-hero-title">Stel je vraag aan onze AI chatbot Kruidje</h1>
+                <h3 class="section-content-block-fullwidth-subtitle text-center"></h3>
 
-      <div class="container">
-        <h2>
-          <div class="prompt">Waar kan ik je mee helpen?</div>
-        </h2>
-        <div style="display: flex; gap: 1em; align-items: center; margin-bottom: 1.5em;">
-            <input type="text" id="userInput" class="input-line" placeholder="Typ hier je vraag..." style="
+                <div class="container">
+                    <h2>
+                        <div class="prompt">Waar kan ik je mee helpen?</div>
+                    </h2>
+                    <div style="display: flex; gap: 1em; align-items: center; margin-bottom: 1.5em;">
+                        <input type="text" id="userInput" class="input-line" placeholder="Typ hier je vraag..." style="
             width: 100%;
             height: 1.5em;
             font-size: 1.1em;
@@ -4427,8 +4428,8 @@
             box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
             outline: none;
             transition: border 0.2s ease, box-shadow 0.2s ease;
-            ">        
-            <button onclick="askQuestion()" style="
+            ">
+                        <button onclick="askQuestion()" style="
             background-color: #b21f24;   /* Verstegen-rood */
             color: white;
             border: none;
@@ -4442,15 +4443,15 @@
             margin-bottom: 1.5em;
             transition: background-color 0.3s ease, transform 0.2s ease;
             ">
-            Stuur
-            </button>
-        </div>
-        <!-- <h3 style="margin-top: 2em; font-weight: bold; color: #b21f24;">Antwoord:</h3> -->
-<h3 id="answerHeading" style="display: none; margin-top: 0; font-weight: bold; color: #b21f24;">
-  Antwoord:
-</h3>
+                            Stuur
+                        </button>
+                    </div>
+                    <!-- <h3 style="margin-top: 2em; font-weight: bold; color: #b21f24;">Antwoord:</h3> -->
+                    <h3 id="answerHeading" style="display: none; margin-top: 0; font-weight: bold; color: #b21f24;">
+                        Antwoord:
+                    </h3>
 
-<div id="chatWindow" style="
+                    <div id="chatWindow" style="
 display:none;
   margin-top: 0;
   background-color: #f4f4f4;
@@ -4461,7 +4462,7 @@ display:none;
   overflow-y: auto;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 ">
-  <div id="response" style="
+                        <div id="response" style="
   display:none;
     background-color: white;
     padding: 0.75em 1em;
@@ -4472,34 +4473,34 @@ display:none;
     color: #333;
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
   "></div>
-</div>
-      </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-  </div>
-</div>
 
-<script>
-  async function askQuestion() {
-    const input = document.getElementById('userInput');
-    const responseDiv = document.getElementById('response');
-    const question = input.value.trim();
-    if (!question) return;
-    chatWindow.style.display = 'block';
-    response.style.display = 'block';
-    answerHeading.style.display = "none";
-    responseDiv.innerHTML = "Kruidje denkt na, een moment geduld aub...";
-    const res = await fetch("/ask", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ question })
-    });
+    <script>
+        async function askQuestion() {
+            const input = document.getElementById('userInput');
+            const responseDiv = document.getElementById('response');
+            const question = input.value.trim();
+            if (!question) return;
+            chatWindow.style.display = 'block';
+            response.style.display = 'block';
+            answerHeading.style.display = "none";
+            responseDiv.innerHTML = "Kruidje denkt na, een moment geduld aub...";
+            const res = await fetch("/ask", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ question })
+            });
 
-    const data = await res.json();
-    answerHeading.style.display = 'block';
+            const data = await res.json();
+            answerHeading.style.display = 'block';
 
-    responseDiv.innerHTML = data.answer || "Er ging iets mis.";
-  }
-</script>
+            responseDiv.innerHTML = data.answer || "Er ging iets mis.";
+        }
+    </script>
 
 
     <!-- section accordian -->
@@ -4756,14 +4757,13 @@ display:none;
                                         KvK: 24-124683</p>
                                     <div class="box-gray">
                                         <p><img decoding="async" class="alignnone wp-image-1838"
-                                                style="margin-bottom: -2px"
-                                                src="./static/mobile-alt-solid-red.svg"
+                                                style="margin-bottom: -2px" src="./static/mobile-alt-solid-red.svg"
                                                 alt="mobile-alt-solid-red" width="10"> <a
                                                 href="tel:+31 (0) 10 245 51 00">+31 (0) 10 245 51 00</a></p>
                                         <p><i class="fas fa-envelope"></i><img decoding="async"
                                                 class="alignnone wp-image-1836" style="margin-bottom: -2px"
-                                                src="./static/envelope-solid.svg" alt="envelope-solid"
-                                                width="16"> <a href="mailto:info@verstegen.nl">info@verstegen.nl</a>
+                                                src="./static/envelope-solid.svg" alt="envelope-solid" width="16"> <a
+                                                href="mailto:info@verstegen.nl">info@verstegen.nl</a>
                                         </p>
                                     </div>
                                 </div>
@@ -4922,8 +4922,7 @@ display:none;
                             height="auto">
                     </a>
                     <a href="https://verstegen.nl/bcorp/" class="b-corplogo">
-                        <img src="./static/B-Corp-Logo-Black-RGB.png" alt="logo on footer" width="60"
-                            height="auto">
+                        <img src="./static/B-Corp-Logo-Black-RGB.png" alt="logo on footer" width="60" height="auto">
                     </a>
                 </div>
                 <div class="col">
@@ -4951,8 +4950,7 @@ display:none;
                 </div>
                 <div class="col">
 
-                    <img src="./static/Group.png" class="payoff" alt="Image thuiswinkel" width="auto"
-                        height="auto">
+                    <img src="./static/Group.png" class="payoff" alt="Image thuiswinkel" width="auto" height="auto">
                 </div>
                 <!-- <img class="payment-footer" src="https://verstegen.nl/wp-content/themes/verstegen-compro/assets/images/footer_payment.png" alt="payments logo" width="380" height="auto"> -->
             </div>
@@ -4966,8 +4964,8 @@ display:none;
         src="./static/saved_resource.html"></iframe><noscript><img height="1" width="1" style="display: none;"
             src="https://www.facebook.com/tr?id=1787599811284485&ev=PageView&noscript=1&cd%5Bpage_title%5D=Contact&cd%5Bpost_type%5D=page&cd%5Bpost_id%5D=257&cd%5Bplugin%5D=PixelYourSite&cd%5Buser_role%5D=guest&cd%5Bevent_url%5D=verstegen.nl%2Fcontact%2F"
             alt=""></noscript>
-    <link rel="stylesheet" id="wpml-legacy-horizontal-list-0-css" href="./static/style(1).min.css"
-        type="text/css" media="all">
+    <link rel="stylesheet" id="wpml-legacy-horizontal-list-0-css" href="./static/style(1).min.css" type="text/css"
+        media="all">
     <link rel="stylesheet" id="contact-form-7-css" href="./static/styles.css" type="text/css" media="all">
     <script type="text/javascript" id="rocket-browser-checker-js-after">
         /* <![CDATA[ */
@@ -5102,7 +5100,7 @@ display:none;
         </div><iframe style="display: none;" src="./static/saved_resource(1).html"></iframe>
     </div><img id="CookiebotSessionPixel" src="./static/1.gif" alt="Cookiebot session tracker icon loaded"
         data-cookieconsent="ignore" style="display: none;">
-        <!-- <script>
+    <!-- <script>
     function askQuestion() {
         const question = document.querySelector(".input-line").value;
         document.getElementById("response").innerText = "Bezig met nadenken...";

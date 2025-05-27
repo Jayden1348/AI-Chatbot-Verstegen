@@ -17,3 +17,8 @@
 .input-line:focus {
     border-color: #007bff;
 }
+
+.wrapper-btn .btn-style-1 {
+    padding: 6px 10px;
+    font-size: 14px;
+}
