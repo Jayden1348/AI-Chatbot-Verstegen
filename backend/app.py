@@ -1,13 +1,13 @@
 from flask import Flask, request, jsonify, send_from_directory
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from sentence_transformers import SentenceTransformer
 import bcrypt
 import jwt
 import chromadb
 import ollama
-import os
+import subprocess
 from dotenv import load_dotenv
 
 
@@ -39,7 +39,7 @@ class User(db.Model):
 def create_token(username):
     payload = {
         "sub": username,
-        "exp": datetime.utcnow() + timedelta(minutes=TOKEN_EXPIRATION_MINUTES)
+        "exp": datetime.now(timezone.utc) + timedelta(minutes=TOKEN_EXPIRATION_MINUTES)
     }
     return jwt.encode(payload, SECRET_KEY, algorithm=JWT_ALGORITHM)
 
@@ -49,21 +49,21 @@ def decode_token(token):
         payload = jwt.decode(token, SECRET_KEY, algorithms=[JWT_ALGORITHM])
         return payload["sub"]
     except jwt.ExpiredSignatureError:
-        raise Exception("Token is verlopen.")
+        raise jwt.ExpiredSignatureError("Token is verlopen.")
     except jwt.InvalidTokenError:
-        raise Exception("Ongeldig token.")
+        raise jwt.InvalidTokenError("Ongeldige token.")
 
-
-with app.app_context():
-    db.create_all()
-    if not User.query.filter_by(username="HR1").first():
-        hashed_pw = bcrypt.hashpw("Kruidje".encode("utf-8"), bcrypt.gensalt())
-        user = User(username="HR1", password=hashed_pw)
-        db.session.add(user)
-        db.session.commit()
-        print("Gebruiker 'HR1' aangemaakt.")
-    else:
-        print("Gebruiker 'HR1' bestaat al.")
+def create_tables():
+    with app.app_context():
+        db.create_all()
+        if not User.query.filter_by(username="HR1").first():
+            hashed_pw = bcrypt.hashpw("Kruidje".encode("utf-8"), bcrypt.gensalt())
+            user = User(username="HR1", password=hashed_pw)
+            db.session.add(user)
+            db.session.commit()
+            print("Gebruiker 'HR1' aangemaakt.")
+        else:
+            print("Gebruiker 'HR1' bestaat al.")
 
 
 @app.post("/api/login")
@@ -113,18 +113,17 @@ def get_current_user():
     except Exception as e:
         return jsonify({"error": str(e)}), 401
 
-
 model = SentenceTransformer("all-MiniLM-L6-v2")
 client = chromadb.Client()
 collection = client.get_or_create_collection(name="my_documents")
+def get_reference_info():
+    with open("../Data/Verstegen_Cao.txt", "r", encoding="utf-8") as f:
+        text_chunks = f.read().split(". ")
 
-with open("../Data/Verstegen_Cao.txt", "r", encoding="utf-8") as f:
-    text_chunks = f.read().split(". ")
-
-if not collection.count():
-    for i, chunk in enumerate(text_chunks):
-        collection.add(documents=[chunk], embeddings=[
-                       model.encode(chunk)], ids=[str(i)])
+    if not collection.count():
+        for i, chunk in enumerate(text_chunks):
+            collection.add(documents=[chunk], embeddings=[
+                           model.encode(chunk)], ids=[str(i)])
 
 
 @app.route("/")
@@ -167,5 +166,12 @@ def ask():
 
 
 if __name__ == "__main__":
+    print("Ollama wordt gestart...")
+    process = subprocess.Popen(['ollama', 'serve'], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    print("Database tables worden geinitialiseerd...")
+    create_tables()
+    print("Model wordt geinitialiseerd...")
+    get_reference_info()
+    print("Web applicatie wordt gestart...")
     app.run(debug=True)
 # Logging level moet nog worden aangepast.
