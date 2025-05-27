@@ -162,8 +162,10 @@ def ask():
         )
         return jsonify({"answer": response['message']['content'].strip()})
     except Exception as e:
-        return jsonify({"answer": f"Er ging iets mis: {str(e)}"}), 500
+        print(f"UNEXPECTED ERROR IN ASK FUNCTION: {str(e)}")
+        return jsonify({"answer": "Er ging iets mis."}), 500
 
 
 if __name__ == "__main__":
     app.run(debug=True)
+# Logging level moet nog worden aangepast.

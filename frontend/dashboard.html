@@ -99,7 +99,8 @@
 
         function logout() {
             localStorage.removeItem("token");
-            window.location.href = "/login";
+            // Hier kan evt nog een banner worden toegevoegd om de gebruiker te laten weten dat deze is uitgelogd.
+            window.location.href = "/"; // Redirect naar login is niet logisch.
         }
     </script>
 </body>
