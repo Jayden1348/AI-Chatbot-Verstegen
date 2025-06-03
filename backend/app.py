@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify, send_from_directory
+from flask import Flask, request, jsonify, send_from_directory, render_template, redirect
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 from datetime import datetime, timedelta
@@ -19,6 +19,7 @@ from dotenv import load_dotenv
 SECRET_KEY = "your-secret-key"
 JWT_ALGORITHM = "HS256"
 TOKEN_EXPIRATION_MINUTES = 30
+UPLOAD_FOLDER = os.path.join(os.path.dirname(__file__), '../Data')
 
 app = Flask(__name__,
             static_folder="../frontend/static",
@@ -27,6 +28,8 @@ CORS(app)
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
 db = SQLAlchemy(app)
 
 
@@ -140,6 +143,58 @@ def login_page():
 @app.route("/dashboard")
 def dashboard():
     return send_from_directory(app.template_folder, "dashboard.html")
+
+
+
+# Data Management
+@app.route("/data_management")
+def data_management():
+    files = os.listdir(app.config['UPLOAD_FOLDER'])
+    return render_template("data_management.html", files=files)
+
+# delete endpoint
+@app.route("/delete", methods=["POST"])
+def delete_file():
+
+    filename = request.form.get("filename")
+    files = os.listdir(app.config['UPLOAD_FOLDER'])
+    if not filename:
+        return render_template("data_management.html", files=files, message="Geen bestandsnaam opgegeven.", type="error")
+
+    file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+    if os.path.exists(file_path):
+        os.remove(file_path)
+        files = os.listdir(app.config['UPLOAD_FOLDER'])
+        return render_template("data_management.html", files=files, message=f"Bestand '{filename}' succesvol verwijderd.", type="success")
+    else:
+        return render_template("data_management.html", files=files, message=f"Bestand '{filename}' niet gevonden.", type="error")
+
+# checks file type
+def allowed_file(filename):
+    ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'}
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+# upload endpoint
+@app.route("/upload", methods=["POST"])
+def upload_file():
+
+    files = os.listdir(app.config['UPLOAD_FOLDER'])
+    if 'file' not in request.files:
+        return render_template("data_management.html", files=files, message="Geen bestand geselecteerd.", type="error")
+
+    file = request.files['file']
+    if file.filename == '':
+        return render_template("data_management.html", files=files, message="Geen bestand geselecteerd.", type="error")
+
+    if file and allowed_file(file.filename):
+        file.save(os.path.join(app.config['UPLOAD_FOLDER'], file.filename))
+        files = os.listdir(app.config['UPLOAD_FOLDER'])
+        return render_template("data_management.html", files=files, message=f"Bestand '{file.filename}' succesvol geüpload.", type="success")
+
+    return render_template("data_management.html", files=files, message="Ongeldig bestandstype.", type="error")
+
+
+
 
 
 @app.route("/ask", methods=["POST"])

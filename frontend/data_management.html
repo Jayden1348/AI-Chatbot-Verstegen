@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Management</title>
+</head>
+<body>
+    <div class="center">
+        {% if message %}
+        <p class="{{ type }}">{{ message }}</p>
+        {% endif %}
+
+        <h1>Uploading Files</h1>
+        <form method="POST" enctype="multipart/form-data" action="/upload">
+          <input type="file" name="file">
+          <input type="submit" value="Upload">
+        </form>
+
+        <h1>Overview of Files</h1>
+        <ul>
+            {% for file in files %}
+            <li>
+                {{ file }}
+                <form method="POST" action="/delete" style="display:inline;">
+                    <input type="hidden" name="filename" value="{{ file }}">
+                    <button type="submit">Delete</button>
+                </form>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+</body>
+</html>
