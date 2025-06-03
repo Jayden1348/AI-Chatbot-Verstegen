@@ -8,6 +8,7 @@ import jwt
 import chromadb
 import ollama
 import subprocess
+import nltk
 from dotenv import load_dotenv
 
 
@@ -36,6 +37,40 @@ class User(db.Model):
     password = db.Column(db.LargeBinary, nullable=False)
 
 
+model = SentenceTransformer("all-MiniLM-L6-v2")
+client = chromadb.PersistentClient()
+collection = client.get_or_create_collection(name="my_documents")
+def get_reference_info():
+    with open("../Data/Verstegen_Cao.txt", "r", encoding="utf-8") as f:
+        text_chunks = nltk.sent_tokenize(f.read())  # Improved sentence splitting
+
+    if collection.count() == 0:  # Correct count check
+        embeddings = model.encode(text_chunks, convert_to_numpy=True)
+        collection.add(documents=text_chunks, embeddings=embeddings, ids=[str(i) for i in range(len(text_chunks))])
+
+
+def search_documents(question):
+    query_embedding = model.encode(question)
+    results = collection.query(query_embeddings=[query_embedding])
+
+    if 'documents' in results and results['documents']:
+        return "\n".join(results['documents'][0])
+    return "No relevant documents found."
+
+
+def create_tables():
+    with app.app_context():
+        db.create_all()
+        if not User.query.filter_by(username="HR1").first():
+            hashed_pw = bcrypt.hashpw("Kruidje".encode("utf-8"), bcrypt.gensalt())
+            user = User(username="HR1", password=hashed_pw)
+            db.session.add(user)
+            db.session.commit()
+            print("Gebruiker 'HR1' aangemaakt.")
+        else:
+            print("Gebruiker 'HR1' bestaat al.")
+
+
 def create_token(username):
     payload = {
         "sub": username,
@@ -52,18 +87,6 @@ def decode_token(token):
         raise jwt.ExpiredSignatureError("Token is verlopen.")
     except jwt.InvalidTokenError:
         raise jwt.InvalidTokenError("Ongeldige token.")
-
-def create_tables():
-    with app.app_context():
-        db.create_all()
-        if not User.query.filter_by(username="HR1").first():
-            hashed_pw = bcrypt.hashpw("Kruidje".encode("utf-8"), bcrypt.gensalt())
-            user = User(username="HR1", password=hashed_pw)
-            db.session.add(user)
-            db.session.commit()
-            print("Gebruiker 'HR1' aangemaakt.")
-        else:
-            print("Gebruiker 'HR1' bestaat al.")
 
 
 @app.post("/api/login")
@@ -113,18 +136,6 @@ def get_current_user():
     except Exception as e:
         return jsonify({"error": str(e)}), 401
 
-model = SentenceTransformer("all-MiniLM-L6-v2")
-client = chromadb.Client()
-collection = client.get_or_create_collection(name="my_documents")
-def get_reference_info():
-    with open("../Data/Verstegen_Cao.txt", "r", encoding="utf-8") as f:
-        text_chunks = f.read().split(". ")
-
-    if not collection.count():
-        for i, chunk in enumerate(text_chunks):
-            collection.add(documents=[chunk], embeddings=[
-                           model.encode(chunk)], ids=[str(i)])
-
 
 @app.route("/")
 def index():
@@ -145,10 +156,8 @@ def dashboard():
 def ask():
     data = request.json
     question = data.get("question", "")
-    query_embedding = model.encode(question)
-    results = collection.query(query_embeddings=[query_embedding], n_results=3)
-    context = "\n".join(results['documents'][0])
-    prompt = f"Context:\n{context}\n\nVraag: {question}\nAntwoord in het Nederlands:"
+    context = search_documents(question)
+    prompt = f"Context:\n{context}\n\nVraag: {question}\nBeknopt antwoord in het Nederlands:"
 
     try:
         response = ollama.chat(
@@ -166,6 +175,8 @@ def ask():
 
 
 if __name__ == "__main__":
+    print("Natural Language Toolkit wordt bijgewerkt...")
+    nltk.download('punkt_tab')
     print("Ollama wordt gestart...")
     process = subprocess.Popen(['ollama', 'serve'], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     print("Database tables worden geinitialiseerd...")
