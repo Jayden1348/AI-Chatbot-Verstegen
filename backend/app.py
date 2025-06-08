@@ -3,12 +3,16 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 from datetime import datetime, timedelta, timezone
 from sentence_transformers import SentenceTransformer
+from gtts import gTTS
 import bcrypt
 import jwt
 import chromadb
 import ollama
 import subprocess
 import nltk
+import pygame
+import time
+import os
 from dotenv import load_dotenv
 
 
@@ -40,13 +44,17 @@ class User(db.Model):
 model = SentenceTransformer("all-MiniLM-L6-v2")
 client = chromadb.PersistentClient()
 collection = client.get_or_create_collection(name="my_documents")
+
+
 def get_reference_info():
     with open("../Data/Verstegen_Cao.txt", "r", encoding="utf-8") as f:
-        text_chunks = nltk.sent_tokenize(f.read())  # Improved sentence splitting
+        text_chunks = nltk.sent_tokenize(
+            f.read())  # Improved sentence splitting
 
     if collection.count() == 0:  # Correct count check
         embeddings = model.encode(text_chunks, convert_to_numpy=True)
-        collection.add(documents=text_chunks, embeddings=embeddings, ids=[str(i) for i in range(len(text_chunks))])
+        collection.add(documents=text_chunks, embeddings=embeddings, ids=[
+                       str(i) for i in range(len(text_chunks))])
 
 
 def search_documents(question):
@@ -62,7 +70,8 @@ def create_tables():
     with app.app_context():
         db.create_all()
         if not User.query.filter_by(username="HR1").first():
-            hashed_pw = bcrypt.hashpw("Kruidje".encode("utf-8"), bcrypt.gensalt())
+            hashed_pw = bcrypt.hashpw(
+                "Kruidje".encode("utf-8"), bcrypt.gensalt())
             user = User(username="HR1", password=hashed_pw)
             db.session.add(user)
             db.session.commit()
@@ -87,6 +96,19 @@ def decode_token(token):
         raise jwt.ExpiredSignatureError("Token is verlopen.")
     except jwt.InvalidTokenError:
         raise jwt.InvalidTokenError("Ongeldige token.")
+
+
+def speak_dutch(text):
+    tts = gTTS(text=text, lang='nl')
+    filename = "dutch_speech.mp3"
+    tts.save(filename)
+    pygame.mixer.init()
+    pygame.mixer.music.load(filename)
+    pygame.mixer.music.play()
+    while pygame.mixer.music.get_busy():
+        time.sleep(0.1)
+    pygame.mixer.music.unload()
+    os.remove(filename)
 
 
 @app.post("/api/login")
@@ -152,6 +174,16 @@ def dashboard():
     return send_from_directory(app.template_folder, "dashboard.html")
 
 
+@app.route("/speak_dutch", methods=["POST"])
+def speak_dutch_api():
+    data = request.json
+    text = data.get("text")
+    if text:
+        speak_dutch(text)
+        return jsonify({"status": "ok"})
+    return jsonify({"error": "No text provided"}), 400
+
+
 @app.route("/ask", methods=["POST"])
 def ask():
     data = request.json
@@ -178,7 +210,8 @@ if __name__ == "__main__":
     print("Natural Language Toolkit wordt bijgewerkt...")
     nltk.download('punkt_tab')
     print("Ollama wordt gestart...")
-    process = subprocess.Popen(['ollama', 'serve'], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    process = subprocess.Popen(
+        ['ollama', 'serve'], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     print("Database tables worden geinitialiseerd...")
     create_tables()
     print("Model wordt geinitialiseerd...")

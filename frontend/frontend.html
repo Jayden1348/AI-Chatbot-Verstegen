@@ -4704,6 +4704,9 @@ display:none;
     color: #333;
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
   "></div>
+                        <button id="speakBtnBrowser" style="margin-top:1em;display:none;">🔊 SpeechSynthesisUtterance
+                            (Web Speech API).</button>
+                        <button id="speakBtnServer" style="margin-top:1em;display:none;">🔊 gTTS and pygame</button>
                     </div>
                 </div>
             </div>
@@ -4714,12 +4717,16 @@ display:none;
         async function askQuestion() {
             const input = document.getElementById('userInput');
             const responseDiv = document.getElementById('response');
+            const speakBtnBrowser = document.getElementById('speakBtnBrowser');
+            const speakBtnServer = document.getElementById('speakBtnServer');
             const question = input.value.trim();
             if (!question) return;
             chatWindow.style.display = 'block';
             response.style.display = 'block';
             answerHeading.style.display = "none";
             responseDiv.innerHTML = "Kruidje denkt na, een moment geduld aub...";
+            speakBtnBrowser.style.display = "none";
+            speakBtnServer.style.display = "none";
             const res = await fetch("/ask", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -4728,8 +4735,29 @@ display:none;
 
             const data = await res.json();
             answerHeading.style.display = 'block';
-
             responseDiv.innerHTML = data.answer || "Er ging iets mis.";
+
+            if (data.answer) {
+                // Show both buttons
+                speakBtnBrowser.style.display = "inline-block";
+                speakBtnServer.style.display = "inline-block";
+
+                // Browser speech
+                speakBtnBrowser.onclick = function () {
+                    const utterance = new SpeechSynthesisUtterance(data.answer);
+                    utterance.lang = 'nl-NL';
+                    window.speechSynthesis.speak(utterance);
+                };
+
+                // Server speech (calls your backend endpoint)
+                speakBtnServer.onclick = async function () {
+                    await fetch("/speak_dutch", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ text: data.answer })
+                    });
+                };
+            }
         }
     </script>
 
