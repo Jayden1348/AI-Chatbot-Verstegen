@@ -1,35 +1,136 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="nl">
+
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Data Management</title>
+    <title>Data Management - Verstegen AI</title>
+    <link rel="stylesheet" href="./static/style.css">
+    <link rel="stylesheet" href="./static/themes.min.css">
+    <style>
+        body {
+            margin: 0;
+            background-color: #f5f5f5;
+            font-family: "Prompt", sans-serif;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #cd0b35;
+            color: white;
+            padding: 15px 30px;
+        }
+
+        .header-left a {
+            color: white;
+            margin-right: 20px;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .header-left a:hover {
+            text-decoration: underline;
+        }
+
+        .header-right button {
+            background-color: white;
+            color: #cd0b35;
+            border: none;
+            padding: 8px 14px;
+            font-size: 14px;
+            font-weight: bold;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .header-right button:hover {
+            background-color: #f1f1f1;
+        }
+
+        .content {
+            text-align: center;
+            margin-top: 100px;
+        }
+
+        .content h1 {
+            font-size: 36px;
+            color: #005B43;
+            font-family: "DIN Next LT W04 Heavy Condensed", sans-serif;
+            text-transform: uppercase;
+        }
+
+        .content form {
+            margin: 20px auto;
+        }
+
+        .content ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .content ul li {
+            margin: 10px 0;
+        }
+
+        .content ul li button {
+            margin-left: 10px;
+            background-color: #cd0b35;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .content ul li button:hover {
+            background-color: #a00b28;
+        }
+    </style>
 </head>
+
 <body>
-    <div class="center">
+    <div class="header">
+        <div class="header-left">
+            <a href="/dashboard">Dashboard</a>
+            <a href="/data_management">Data beheren</a>
+        </div>
+        <div class="header-right">
+            <button onclick="logout()">Uitloggen</button>
+        </div>
+    </div>
+
+    <div class="content">
         {% if message %}
         <p class="{{ type }}">{{ message }}</p>
         {% endif %}
 
-        <h1>Uploading Files</h1>
-        <form method="POST" enctype="multipart/form-data" action="/upload">
-          <input type="file" name="file">
-          <input type="submit" value="Upload">
+        <h1>Data Management</h1>
+
+        <h2>Upload bestanden</h2>
+        <form method="POST" enctype="multipart/form-data" action="/data_management/upload">
+            <input type="file" name="file">
+            <button type="submit">Upload</button>
         </form>
 
-        <h1>Overview of Files</h1>
+        <h2>Overzicht van bestanden</h2>
         <ul>
             {% for file in files %}
             <li>
                 {{ file }}
-                <form method="POST" action="/delete" style="display:inline;">
+                <form method="POST" action="/data_management/delete" style="display:inline;">
                     <input type="hidden" name="filename" value="{{ file }}">
-                    <button type="submit">Delete</button>
+                    <button type="submit">Verwijder</button>
+                </form>
+                <form method="POST" action="/data_management/view" style="display:inline;">
+                    <input type="hidden" name="filename" value="{{ file }}">
+                    <button type="submit">Bekijk</button>
                 </form>
             </li>
             {% endfor %}
         </ul>
     </div>
 </body>
+
 </html>

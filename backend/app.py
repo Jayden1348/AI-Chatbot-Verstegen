@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify, send_from_directory, render_template, redirect
+from flask import Flask, request, jsonify, send_from_directory, render_template
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 from datetime import datetime, timedelta
@@ -153,7 +153,7 @@ def data_management():
     return render_template("data_management.html", files=files)
 
 # delete endpoint
-@app.route("/delete", methods=["POST"])
+@app.route("/data_management/delete", methods=["POST"])
 def delete_file():
 
     filename = request.form.get("filename")
@@ -175,7 +175,7 @@ def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 # upload endpoint
-@app.route("/upload", methods=["POST"])
+@app.route("/data_management/upload", methods=["POST"])
 def upload_file():
 
     files = os.listdir(app.config['UPLOAD_FOLDER'])
@@ -189,11 +189,34 @@ def upload_file():
     if file and allowed_file(file.filename):
         file.save(os.path.join(app.config['UPLOAD_FOLDER'], file.filename))
         files = os.listdir(app.config['UPLOAD_FOLDER'])
+    
         return render_template("data_management.html", files=files, message=f"Bestand '{file.filename}' succesvol geüpload.", type="success")
 
     return render_template("data_management.html", files=files, message="Ongeldig bestandstype.", type="error")
 
+@app.route("/data_management/view", methods=["POST"])
+def view_file():
+    filename = request.form.get("filename")
+    if not filename:
+        return "No filename provided", 400
 
+    filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+
+    if not os.path.exists(filepath):
+        return "File not found", 404
+
+    extension = filename.rsplit('.', 1)[-1].lower()
+
+    content = ""
+    if extension == "txt":
+        with open(filepath, "r", encoding="utf-8") as file:
+            content = file.read()
+
+    return render_template("file_viewer.html", filename=filename, extension=extension, content=content)
+
+@app.route("/uploads/<path:filename>")
+def serve_file(filename):
+    return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
 
 
 
