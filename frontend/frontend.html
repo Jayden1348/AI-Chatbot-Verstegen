@@ -4641,7 +4641,7 @@
             <div class="wrapper-content">
                 <h1 class="section-content-hero-title">Stel je vraag aan onze AI chatbot Kruidje</h1>
                 <h3 class="section-content-block-fullwidth-subtitle text-center"></h3>
-
+                <div id="qaHistory" style="margin: 2em 0;"></div>
                 <div class="container">
                     <h2>
                         <div class="prompt">Waar kan ik je mee helpen?</div>
@@ -4719,6 +4719,7 @@ display:none;
             const responseDiv = document.getElementById('response');
             const speakBtnBrowser = document.getElementById('speakBtnBrowser');
             const speakBtnServer = document.getElementById('speakBtnServer');
+            const qaHistory = document.getElementById('qaHistory');
             const question = input.value.trim();
             if (!question) return;
             chatWindow.style.display = 'block';
@@ -4737,19 +4738,29 @@ display:none;
             answerHeading.style.display = 'block';
             responseDiv.innerHTML = data.answer || "Er ging iets mis.";
 
+            // Add to history
             if (data.answer) {
-                // Show both buttons
+                const qaItem = document.createElement('div');
+                qaItem.style.marginBottom = "1em";
+                qaItem.innerHTML = `
+            <div style="font-weight:bold; color:#b21f24;">Vraag:</div>
+            <div style="margin-bottom:0.5em;">${question}</div>
+            <div style="font-weight:bold; color:#005B43;">Antwoord:</div>
+            <div>${data.answer}</div>
+            <hr style="margin:1em 0;">
+        `;
+                qaHistory.appendChild(qaItem);
                 speakBtnBrowser.style.display = "inline-block";
                 speakBtnServer.style.display = "inline-block";
 
-                // Browser speech
+                // SpeechSynthesisUtterance
                 speakBtnBrowser.onclick = function () {
                     const utterance = new SpeechSynthesisUtterance(data.answer);
                     utterance.lang = 'nl-NL';
                     window.speechSynthesis.speak(utterance);
                 };
 
-                // Server speech (calls your backend endpoint)
+                // gTTS and pygame
                 speakBtnServer.onclick = async function () {
                     await fetch("/speak_dutch", {
                         method: "POST",
