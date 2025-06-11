@@ -3,6 +3,7 @@
 <html lang="nl-NL" prefix="og: https://ogp.me/ns#">
 
 <head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta http-equiv="origin-trial"
         content="A7vZI3v+Gz7JfuRolKNM4Aff6zaGuT7X0mf3wtoZTnKv6497cVMnhy03KDqX7kBz/q/iidW7srW31oQbBt4VhgoAAACUeyJvcmlnaW4iOiJodHRwczovL3d3dy5nb29nbGUuY29tOjQ0MyIsImZlYXR1cmUiOiJEaXNhYmxlVGhpcmRQYXJ0eVN0b3JhZ2VQYXJ0aXRpb25pbmczIiwiZXhwaXJ5IjoxNzU3OTgwODAwLCJpc1N1YmRvbWFpbiI6dHJ1ZSwiaXNUaGlyZFBhcnR5Ijp0cnVlfQ==">
@@ -4637,13 +4638,13 @@
     </div>
 
     <div class="section-content-block-fullwidth bg-dark-white">
-        <div class="container">
+        <div class="container" style="margin-bottom: 3em;">
             <div class="wrapper-content">
                 <h1 class="section-content-hero-title" style="text-align:center">Stel je vraag aan onze AI chatbot
                     Kruidje</h1>
                 <h3 class="section-content-block-fullwidth-subtitle text-center"></h3>
                 <div id="qaHistory"
-                    style="display:none; margin: 2em 0; max-height: 300px; overflow-y: auto; border-radius: 10px; background: #fff; box-shadow: 0 2px 6px rgba(0,0,0,0.05); padding: 1em;">
+                    style="display:none;margin: 2em 0; max-height: 240px; overflow-y: auto; border-radius: 10px; border: 1px solid #d7d7d7; background: #eceaea; box-shadow: 0 2px 6px rgba(0,0,0,0.05); padding: 1em;">
                 </div>
             </div>
             <div class="container">
@@ -4687,7 +4688,7 @@
                 </h3>
 
                 <div id="chatWindow" style="
-display:none;
+  display:none;
   margin-top: 0;
   background-color: #f4f4f4;
   border: 1px solid #ddd;
@@ -4697,100 +4698,181 @@ display:none;
   overflow-y: auto;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 ">
-                    <div id="response" style="
-  display:none;
-    background-color: white;
-    padding: 0.75em 1em;
-    border-radius: 8px;
-    margin-bottom: 0.5em;
-    font-weight: 500;
-    font-size: 1em;
-    color: #333;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
-  "></div>
-                    <button id="speakBtnBrowser" style="margin-top:1em;display:none;">🔊 SpeechSynthesisUtterance
-                        (Web Speech API).</button>
-                    <button id="speakBtnServer" style="margin-top:1em;display:none;">🔊 gTTS and pygame</button>
+                    <div style="display: flex; align-items: center;">
+                        <div id="response" style="
+              display:none;
+              background-color: rgb(255, 255, 255);
+              padding: 0.75em 1em;
+              border-radius: 8px;
+              font-weight: 500;
+              font-size: 1em;
+              color: #333;
+              box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+              flex: 1 1 auto;
+            ">
+                        </div>
+                        <button id="speakBtnServer"
+                            style="margin-left:0.5em;display:none; background:none; border:none; cursor:pointer;"
+                            title="Laat het antwoord uitspreken">
+                            <i class="fa-solid fa-volume-high" style="font-size:1.5em; color:#000000;"></i>
+                        </button>
+                        <button id="microphoneBtn"
+                            style="margin-left:0.5em; background:none; border:none; cursor:pointer;"
+                            title="Stel je vraag met je stem">
+                            <i class="fa-solid fa-microphone" style="font-size:1.5em; color:#000000;"></i>
+                        </button>
+                        <button id="thumbsUpBtn"
+                            style="margin-left:0.5em; background:none; border:none; cursor:pointer;"
+                            title="Goed antwoord">
+                            <i class="fa-solid fa-thumbs-up" style="font-size:1.5em; color:#005B43;"></i>
+                        </button>
+                        <button id="thumbsDownBtn"
+                            style="margin-left:0.5em; background:none; border:none; cursor:pointer;"
+                            title="Slecht antwoord">
+                            <i class="fa-solid fa-thumbs-down" style="font-size:1.5em; color:#b21f24;"></i>
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-    </div>
+
 
     <script>
-        // Store the last Q&A
         let lastQuestion = null;
         let lastAnswer = null;
+        let waitingForAnswer = false;
+        let loadingInterval = null;
+
+        // Create an object to store references to the icon buttons
+        const chatIcons = {
+            speakBtnServer: null,
+            microphoneBtn: null,
+            thumbsUpBtn: null,
+            thumbsDownBtn: null
+        };
+
+        document.addEventListener("DOMContentLoaded", function () {
+            // Assign DOM elements to the chatIcons object
+            chatIcons.speakBtnServer = document.getElementById('speakBtnServer');
+            chatIcons.microphoneBtn = document.getElementById('microphoneBtn');
+            chatIcons.thumbsUpBtn = document.getElementById('thumbsUpBtn');
+            chatIcons.thumbsDownBtn = document.getElementById('thumbsDownBtn');
+        });
 
         async function askQuestion() {
             const input = document.getElementById('userInput');
+            const sendBtn = document.querySelector('button[onclick="askQuestion()"]');
             const responseDiv = document.getElementById('response');
-            const speakBtnBrowser = document.getElementById('speakBtnBrowser');
-            const speakBtnServer = document.getElementById('speakBtnServer');
             const qaHistory = document.getElementById('qaHistory');
             const question = input.value.trim();
-            if (!question) return;
+            if (!question || waitingForAnswer) return;
+
+            input.disabled = true;
+            sendBtn.disabled = true;
+            waitingForAnswer = true;
 
             if (lastQuestion && lastAnswer) {
                 const qaItem = document.createElement('div');
                 qaItem.style.marginBottom = "1em";
                 qaItem.innerHTML = `
-        <div style="font-weight:bold; color:#b21f24;">Vraag:</div>
-        <div style="margin-bottom:0.5em;">${lastQuestion}</div>
-        <div style="font-weight:bold; color:#005B43;">Antwoord:</div>
-        <div>${lastAnswer}</div>
-        <hr style="margin:1em 0;">
-    `;
+                <div style="font-weight:bold; color:#b21f24;">Vraag:</div>
+                <div style="margin-bottom:0.5em;">${lastQuestion}</div>
+                <div style="font-weight:bold; color:#005B43;">Antwoord:</div>
+                <div>${lastAnswer}</div>
+                <hr style="margin:1em 0;">
+            `;
                 qaHistory.appendChild(qaItem);
-                qaHistory.style.display = "block"; // <-- Show when not empty
+                qaHistory.style.display = "block";
             }
 
             chatWindow.style.display = 'block';
             response.style.display = 'block';
             answerHeading.style.display = "none";
-            responseDiv.innerHTML = "Kruidje denkt na, een moment geduld aub...";
-            speakBtnBrowser.style.display = "none";
-            speakBtnServer.style.display = "none";
-            const res = await fetch("/ask", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ question })
-            });
+            responseDiv.innerHTML = 'Kruidje denkt na, een moment geduld aub<b><span id="loadingDots"></span></b>';
+            showLoadingDots();
+            // Hide all icons while waiting for answer
+            Object.values(chatIcons).forEach(btn => { if (btn) btn.style.display = "none"; });
 
-            const data = await res.json();
-            answerHeading.style.display = 'block';
-            responseDiv.innerHTML = data.answer || "Er ging iets mis.";
-
-            lastQuestion = question;
-            lastAnswer = data.answer;
-
-            speakBtnBrowser.style.display = "inline-block";
-            speakBtnServer.style.display = "inline-block";
-
-            // SpeechSynthesisUtterance
-            speakBtnBrowser.onclick = function () {
-                const utterance = new SpeechSynthesisUtterance(data.answer);
-                utterance.lang = 'nl-NL';
-                window.speechSynthesis.speak(utterance);
-            };
-
-            // gTTS and pygame
-            speakBtnServer.onclick = async function () {
-                await fetch("/speak_dutch", {
+            try {
+                const res = await fetch("/ask", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ text: data.answer })
+                    body: JSON.stringify({ question })
                 });
-            };
+
+                const data = await res.json();
+                answerHeading.style.display = 'block';
+                responseDiv.innerHTML = data.answer || "Er ging iets mis.";
+
+                lastQuestion = question;
+                lastAnswer = data.answer;
+
+                // Show all icons after answer is received
+                Object.values(chatIcons).forEach(btn => { if (btn) btn.style.display = "inline-block"; });
+
+                // Example: add server speak functionality
+                if (chatIcons.speakBtnServer) {
+                    chatIcons.speakBtnServer.onclick = async function () {
+                        await fetch("/speak_dutch", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({ text: data.answer })
+                        });
+                    };
+                }
+
+                if (chatIcons.microphoneBtn) {
+                    chatIcons.microphoneBtn.onclick = function () {
+                        // TODO: Add microphone functionality
+                    };
+                }
+                if (chatIcons.thumbsUpBtn) {
+                    chatIcons.thumbsUpBtn.onclick = function () {
+                        // TODO: Add thumbs up functionality
+                    };
+                }
+                if (chatIcons.thumbsDownBtn) {
+                    chatIcons.thumbsDownBtn.onclick = function () {
+                        // TODO: Add thumbs down functionality
+                    };
+                }
+            } finally {
+                // Enable input and button again
+                hideLoadingDots();
+                input.disabled = false;
+                sendBtn.disabled = false;
+                waitingForAnswer = false;
+                input.focus();
+            }
         }
 
-        // Pressing Enter also sends the question 
+        // Pressing Enter also sends the question, but only if not waiting
         document.getElementById('userInput').addEventListener('keydown', function (event) {
-            if (event.key === 'Enter') {
+            if (event.key === 'Enter' && !this.disabled && !waitingForAnswer) {
                 event.preventDefault();
                 askQuestion();
             }
         });
+
+        function showLoadingDots() {
+            const loadingDots = document.getElementById('loadingDots');
+            if (!loadingDots) return;
+            loadingDots.style.display = 'inline';
+            let dots = 0;
+            loadingInterval = setInterval(() => {
+                dots = (dots + 1) % 4;
+                loadingDots.textContent = '.'.repeat(dots);
+            }, 500);
+        }
+
+        function hideLoadingDots() {
+            const loadingDots = document.getElementById('loadingDots');
+            if (!loadingDots) return;
+            loadingDots.style.display = 'none';
+            clearInterval(loadingInterval);
+            loadingDots.textContent = '';
+        }
     </script>
 
 
@@ -5030,7 +5112,9 @@ display:none;
                         <ul id="menu-menu-footer-klantenservice" class="footer-nav">
                             <li id="menu-item-Veelgestelde vragen"
                                 class="menu-item menu-item-type-custom menu-item-object-custom menu-item-Veelgestelde vragen">
-                                <a href="https://verstegen.nl/contact/">Veelgestelde vragen</a>
+                                <a href="#"
+                                    onclick="window.scrollTo({top: 0}); window.location.reload(); return false;">FAQ en
+                                    Kruidje Chatbot</a>
                             </li>
                             <li id="menu-item-Contact"
                                 class="menu-item menu-item-type-custom menu-item-object-custom menu-item-Contact">
