@@ -3,15 +3,19 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 from datetime import datetime, timedelta, timezone
 from sentence_transformers import SentenceTransformer
+from gtts import gTTS
 import bcrypt
 import jwt
 import chromadb
 import ollama
 import subprocess
 import nltk
-import os
 import json
 from uuid import uuid4
+import pygame
+import time
+import os
+
 
 SECRET_KEY = "your-secret-key"
 JWT_ALGORITHM = "HS256"
@@ -41,6 +45,7 @@ collection = client.get_or_create_collection(name="my_documents")
 
 def get_reference_info():
     with open("../Data/Verstegen_Cao.txt", "r", encoding="utf-8") as f:
+
         text_chunks = nltk.sent_tokenize(f.read())
 
     if collection.count() == 0:
@@ -88,6 +93,19 @@ def decode_token(token):
         raise jwt.ExpiredSignatureError("Token is verlopen.")
     except jwt.InvalidTokenError:
         raise jwt.InvalidTokenError("Ongeldige token.")
+
+
+def speak_dutch(text):
+    tts = gTTS(text=text, lang='nl')
+    filename = "dutch_speech.mp3"
+    tts.save(filename)
+    pygame.mixer.init()
+    pygame.mixer.music.load(filename)
+    pygame.mixer.music.play()
+    while pygame.mixer.music.get_busy():
+        time.sleep(0.1)
+    pygame.mixer.music.unload()
+    os.remove(filename)
 
 
 @app.post("/api/login")
@@ -151,6 +169,16 @@ def login_page():
 @app.route("/dashboard")
 def dashboard():
     return send_from_directory(app.template_folder, "dashboard.html")
+
+
+@app.route("/speak_dutch", methods=["POST"])
+def speak_dutch_api():
+    data = request.json
+    text = data.get("text")
+    if text:
+        speak_dutch(text)
+        return jsonify({"status": "ok"})
+    return jsonify({"error": "No text provided"}), 400
 
 
 @app.route("/ask", methods=["POST"])
@@ -240,3 +268,4 @@ if __name__ == "__main__":
     get_reference_info()
     print("Web applicatie wordt gestart...")
     app.run(debug=True)
+
