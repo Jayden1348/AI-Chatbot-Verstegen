@@ -4803,7 +4803,7 @@
 
                 const data = await res.json();
                 answerHeading.style.display = 'block';
-                responseDiv.innerHTML = data.answer || "Er ging iets mis.";
+                animateTextTyping(responseDiv, data.answer || "Er ging iets mis.");
 
                 lastQuestion = question;
                 lastAnswer = data.answer;
@@ -4873,6 +4873,41 @@
             clearInterval(loadingInterval);
             loadingDots.textContent = '';
         }
+
+        function animateTextTyping(node, text) {
+            const chars = text.split("");
+            node.innerHTML = '<span class="cursor">&nbsp;</span>';
+            node.classList.add("typing");
+            let i = 0;
+
+            function addNextChar(i) {
+                // Remove the old cursor
+                const cursor = node.querySelector('.cursor');
+                if (cursor) cursor.remove();
+
+                let nextChar = chars[i] === "\n" ? "<br>" : chars[i];
+                node.innerHTML += "<span>" + nextChar + "</span>";
+
+                // Add the cursor again at the end
+                node.innerHTML += '<span class="cursor">&nbsp;</span>';
+
+                if (i < chars.length - 1) {
+                    setTimeout(function () {
+                        addNextChar(i + 1);
+                    }, 5 + Math.random() * 30);
+                } else {
+                    // Remove the cursor after a short delay
+                    setTimeout(function () {
+                        const cursor = node.querySelector('.cursor');
+                        if (cursor) cursor.remove();
+                        node.classList.remove("typing");
+                    }, 500);
+                }
+            }
+
+            addNextChar(i);
+        }
+
     </script>
 
 
