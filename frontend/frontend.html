@@ -4237,6 +4237,30 @@
             display: block
         }
 
+        .block-cursor {
+            display: inline-block;
+            width: 0.3em;
+            height: 0.9em;
+            background: #111;
+            vertical-align: middle-10;
+            margin-left: 2px;
+            border-radius: 0;
+            animation: blink-cursor 1s steps(1) infinite;
+        }
+
+        @keyframes blink-cursor {
+
+            0%,
+            60% {
+                opacity: 1;
+            }
+
+            61%,
+            100% {
+                opacity: 0.2;
+            }
+        }
+
         @media only screen and (max-height: 487),
         only screen and (max-width: 767px) {
             .bzfy-o-popup.bzfy-o-media-uploader-iframe-container {
@@ -4709,6 +4733,7 @@
               color: #333;
               box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
               flex: 1 1 auto;
+              width: 1000px
             ">
                         </div>
                         <button id="speakBtnServer"
@@ -4876,32 +4901,35 @@
 
         function animateTextTyping(node, text) {
             const chars = text.split("");
-            node.innerHTML = '<span class="cursor">&nbsp;</span>';
+            node.innerHTML = '';
             node.classList.add("typing");
             let i = 0;
 
             function addNextChar(i) {
-                // Remove the old cursor
-                const cursor = node.querySelector('.cursor');
-                if (cursor) cursor.remove();
+                // Remove any old block cursor
+                const oldCursor = node.querySelector('.block-cursor');
+                if (oldCursor) oldCursor.remove();
 
+                // Add the next character
                 let nextChar = chars[i] === "\n" ? "<br>" : chars[i];
                 node.innerHTML += "<span>" + nextChar + "</span>";
 
-                // Add the cursor again at the end
-                node.innerHTML += '<span class="cursor">&nbsp;</span>';
+                // Add the block cursor after the current text
+                const cursor = document.createElement('span');
+                cursor.className = 'block-cursor';
+                node.appendChild(cursor);
 
                 if (i < chars.length - 1) {
                     setTimeout(function () {
                         addNextChar(i + 1);
-                    }, 5 + Math.random() * 30);
+                    }, 5 + Math.random() * 25);
                 } else {
-                    // Remove the cursor after a short delay
+                    // Remove the block cursor at the end after typing is done
                     setTimeout(function () {
-                        const cursor = node.querySelector('.cursor');
-                        if (cursor) cursor.remove();
+                        const lastCursor = node.querySelector('.block-cursor');
+                        if (lastCursor) lastCursor.remove();
                         node.classList.remove("typing");
-                    }, 500);
+                    }, 300); // Wait a short moment before removing for a nice effect
                 }
             }
 
