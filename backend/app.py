@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify, send_from_directory
+from flask import Flask, request, jsonify, send_from_directory, session
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 from datetime import datetime, timedelta, timezone
@@ -10,15 +10,11 @@ import chromadb
 import ollama
 import subprocess
 import nltk
+import json
+from uuid import uuid4
 import pygame
 import time
 import os
-from dotenv import load_dotenv
-
-
-# Het zou beter zijn om gebruik te maken van een .env, maar voor het gemak doe ik het nog niet.
-# load_dotenv()
-# SECRET_KEY = os.getenv("SECRET_KEY")
 
 
 SECRET_KEY = "your-secret-key"
@@ -29,6 +25,7 @@ app = Flask(__name__,
             static_folder="../frontend/static",
             template_folder="../frontend")
 CORS(app)
+app.secret_key = "anonymous-session-key"  # Voor sessies zonder login
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -48,10 +45,10 @@ collection = client.get_or_create_collection(name="my_documents")
 
 def get_reference_info():
     with open("../Data/Verstegen_Cao.txt", "r", encoding="utf-8") as f:
-        text_chunks = nltk.sent_tokenize(
-            f.read())  # Improved sentence splitting
 
-    if collection.count() == 0:  # Correct count check
+        text_chunks = nltk.sent_tokenize(f.read())
+
+    if collection.count() == 0:
         embeddings = model.encode(text_chunks, convert_to_numpy=True)
         collection.add(documents=text_chunks, embeddings=embeddings, ids=[
                        str(i) for i in range(len(text_chunks))])
@@ -186,9 +183,13 @@ def speak_dutch_api():
 
 @app.route("/ask", methods=["POST"])
 def ask():
+    if "chat_id" not in session:
+        session["chat_id"] = str(uuid4())[:8]
+
     data = request.json
     question = data.get("question", "")
     context = search_documents(question)
+
     prompt = f"Context:\n{context}\n\nVraag: {question}\nBeknopt antwoord in het Nederlands:"
 
     try:
@@ -200,10 +201,59 @@ def ask():
                 {"role": "user", "content": prompt}
             ]
         )
-        return jsonify({"answer": response['message']['content'].strip()})
+        answer = response['message']['content'].strip()
+
+        log_entry = {
+            "user": question,
+            "bot": answer
+        }
+
+        os.makedirs("chatlogs", exist_ok=True)
+        filepath = "chatlogs/sessions.json"
+
+        if os.path.exists(filepath):
+            with open(filepath, "r", encoding="utf-8") as f:
+                all_logs = json.load(f)
+        else:
+            all_logs = {}
+
+        chat_id = session["chat_id"]
+        if chat_id not in all_logs:
+            all_logs[chat_id] = []
+
+        all_logs[chat_id].append(log_entry)
+
+        with open(filepath, "w", encoding="utf-8") as f:
+            json.dump(all_logs, f, ensure_ascii=False, indent=2)
+
+        return jsonify({"answer": answer, "chat_id": chat_id})
     except Exception as e:
         print(f"UNEXPECTED ERROR IN ASK FUNCTION: {str(e)}")
         return jsonify({"answer": "Er ging iets mis."}), 500
+
+
+@app.get("/history")
+def get_chat_history():
+    chat_id = session.get("chat_id")
+    if not chat_id:
+        return jsonify({"history": []})
+
+    filepath = "chatlogs/sessions.json"
+    if os.path.exists(filepath):
+        with open(filepath, "r", encoding="utf-8") as f:
+            all_logs = json.load(f)
+            return jsonify({"history": all_logs.get(chat_id, [])})
+    return jsonify({"history": []})
+
+
+@app.get("/all_chats")
+def get_all_chats():
+    filepath = "chatlogs/sessions.json"
+    if os.path.exists(filepath):
+        with open(filepath, "r", encoding="utf-8") as f:
+            all_logs = json.load(f)
+            return jsonify(all_logs)
+    return jsonify({})
 
 
 if __name__ == "__main__":
@@ -218,4 +268,4 @@ if __name__ == "__main__":
     get_reference_info()
     print("Web applicatie wordt gestart...")
     app.run(debug=True)
-# Logging level moet nog worden aangepast.
+
