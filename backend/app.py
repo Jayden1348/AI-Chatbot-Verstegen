@@ -190,14 +190,15 @@ def ask():
     question = data.get("question", "")
     context = search_documents(question)
 
-    prompt = f"Context:\n{context}\n\nVraag: {question}\nBeknopt antwoord in het Nederlands:"
+    prompt = f"Context:\n{context}\n\nVraag: {question}\nAntwoord in het Nederlands:"
 
     try:
         response = ollama.chat(
             model="openchat",
             messages=[
-                {"role": "system", "content": "Beantwoord alleen vragen over de CAO van Verstegen. "
-                 "Vakantie, contracten, loonstroken en jaaropgaven zijn te vinden in de HRToday app."},
+                {"role": "system", "content": "Beantwoord alleen vragen met antwoorden die te halen zijn uit de gegeven context van Verstegen. "
+                 "Beantwoord deze beknopt. Als er geen geschikt antwoord kan worden gevonden, verwijs dan naar het telefoonnummer (010) 245 51 00. "
+                 "Vakantie, contracten, loonstroken en jaaropgaven zijn te vinden in het werknemersportaal."},
                 {"role": "user", "content": prompt}
             ]
         )
