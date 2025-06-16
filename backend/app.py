@@ -120,15 +120,47 @@ def get_current_user():
 model = SentenceTransformer("all-MiniLM-L6-v2")
 client = chromadb.Client()
 collection = client.get_or_create_collection(name="my_documents")
+data_folder = app.config['UPLOAD_FOLDER']
 
-with open("../Data/Verstegen_Cao.txt", "r", encoding="utf-8") as f:
-    text_chunks = f.read().split(". ")
+def process_and_index_files():
+    
+    existing_ids = collection.get()["ids"]
+    if existing_ids:
+        collection.delete(ids=existing_ids)
 
-if not collection.count():
-    for i, chunk in enumerate(text_chunks):
-        collection.add(documents=[chunk], embeddings=[
-                       model.encode(chunk)], ids=[str(i)])
+    text_chunks = []
+    ids = []
 
+    for filename in os.listdir(data_folder):
+        file_path = os.path.join(data_folder, filename)
+        if not os.path.isfile(file_path):
+            continue
+
+        extension = filename.rsplit('.', 1)[-1].lower()
+        content = ""
+
+        try:
+            if extension == "txt":
+                with open(file_path, "r", encoding="utf-8") as f:
+                    content = f.read()
+            elif extension == "pdf":
+                import fitz  # PyMuPDF
+                with fitz.open(file_path) as doc:
+                    content = "\n".join(page.get_text() for page in doc)
+            else:
+                continue  #skips all files that are not txt or pdf
+
+            chunks = content.split(". ")  # basic chunking
+            text_chunks.extend(chunks)
+            ids.extend([f"{filename}-{i}" for i in range(len(chunks))])
+        except Exception as e:
+            print(f"Fout bij verwerken van {filename}: {e}")
+
+    if text_chunks:
+        embeddings = [model.encode(chunk) for chunk in text_chunks]
+        collection.add(documents=text_chunks, embeddings=embeddings, ids=ids)
+
+process_and_index_files()
 
 @app.route("/")
 def index():
@@ -165,6 +197,7 @@ def delete_file():
     if os.path.exists(file_path):
         os.remove(file_path)
         files = os.listdir(app.config['UPLOAD_FOLDER'])
+        process_and_index_files()
         return render_template("data_management.html", files=files, message=f"Bestand '{filename}' succesvol verwijderd.", type="success")
     else:
         return render_template("data_management.html", files=files, message=f"Bestand '{filename}' niet gevonden.", type="error")
@@ -189,7 +222,7 @@ def upload_file():
     if file and allowed_file(file.filename):
         file.save(os.path.join(app.config['UPLOAD_FOLDER'], file.filename))
         files = os.listdir(app.config['UPLOAD_FOLDER'])
-    
+        process_and_index_files()
         return render_template("data_management.html", files=files, message=f"Bestand '{file.filename}' succesvol geüpload.", type="success")
 
     return render_template("data_management.html", files=files, message="Ongeldig bestandstype.", type="error")

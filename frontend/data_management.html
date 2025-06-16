@@ -131,6 +131,30 @@
             {% endfor %}
         </ul>
     </div>
+    <script>
+        const token = localStorage.getItem("token");
+        if (!token) {
+            window.location.href = "/login";
+        }
+
+        // Haal gebruikersnaam op
+        fetch("/me", {
+            headers: {
+                "Authorization": "Bearer " + token
+            }
+        })
+            .then(res => res.json())
+            .then(data => {
+                if (data.username) {
+                    document.getElementById("welcome-msg").textContent = `Welkom terug, ${data.username}!`;
+                }
+            });
+
+        function logout() {
+            localStorage.removeItem("token");
+            window.location.href = "/"; // Redirect to the login page after logout
+        }
+    </script>
 </body>
 
 </html>
