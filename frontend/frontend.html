@@ -4261,6 +4261,45 @@
             }
         }
 
+        #micBtn {
+            background: white;
+            color: black;
+            border: 2.5px solid #ddd;
+            border-radius: 10px;
+            padding: 0.75em 1em;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+            transition: border 0.2s, box-shadow 0.2s, background 0.5s, color 0.5s;
+            margin-left: 0.1em;
+            margin-right: 0.1em;
+            /* Fixed width/height if you want even more control */
+            /* width: 56px; height: 56px; */
+        }
+
+        #micBtn .fa-microphone {
+            color: black;
+            font-size: 1.5em;
+            transition: color 0.5s, transform 0.3s;
+            /* Center icon if needed */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #micBtn.mic-recording {
+            background: #b21f24;
+            color: white;
+            border-width: 1.5px;
+        }
+
+        #micBtn.mic-recording .fa-microphone {
+            color: white;
+            transform: scale(1.25);
+            /* Grows the icon */
+        }
+
         @media only screen and (max-height: 487),
         only screen and (max-width: 767px) {
             .bzfy-o-popup.bzfy-o-media-uploader-iframe-container {
@@ -4677,32 +4716,46 @@
                 </h2>
                 <div style="display: flex; gap: 1em; align-items: center; margin-bottom: 1.5em;">
                     <input type="text" id="userInput" class="input-line" placeholder="Typ hier je vraag..." style="
-            width: 100%;
-            height: 1.5em;
-            font-size: 1.1em;
-            padding: 0.75em 1em;
-            border: 1px solid #ddd;
-            border-radius: 10px;
-            background-color: #f4f4f4;
-            color: #333;
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
-            outline: none;
-            transition: border 0.2s ease, box-shadow 0.2s ease;
-            ">
+        width: 100%;
+        height: 1.5em;
+        font-size: 1.1em;
+        padding: 0.75em 1em;
+        border: 1px solid #ddd;
+        border-radius: 10px;
+        background-color: #f4f4f4;
+        color: #333;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+        outline: none;
+        transition: border 0.2s ease, box-shadow 0.2s ease;
+    ">
+                    <button id="micBtn" type="button" style="
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 0.75em 1em;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    transition: border 0.2s ease, box-shadow 0.2s ease;
+    margin-left: 0.1em;
+    margin-right: 0.1em;
+    " title="Spreek je vraag in">
+                        <i class="fa-solid fa-microphone" style="font-size:1.5em;"></i>
+                    </button>
                     <button onclick="askQuestion()" style="
-            background-color: #b21f24;   /* Verstegen-rood */
-            color: white;
-            border: none;
-            padding: 0.75em 2em;
-            font-size: 1.1em;
-            font-weight: bold;
-            border-radius: 8px;
-            cursor: pointer;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-            margin-top:1.5em;
-            margin-bottom: 1.5em;
-            transition: background-color 0.3s ease, transform 0.2s ease;
-            ">
+        background-color: #b21f24;
+        color: white;
+        border: none;
+        padding: 0.75em 2em;
+        font-size: 1.1em;
+        font-weight: bold;
+        border-radius: 8px;
+        cursor: pointer;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        margin-top:1.5em;
+        margin-bottom: 1.5em;
+        transition: background-color 0.3s ease, transform 0.2s ease;
+    ">
                         Stuur
                     </button>
                 </div>
@@ -4741,11 +4794,6 @@
                             title="Laat het antwoord uitspreken">
                             <i class="fa-solid fa-volume-high" style="font-size:1.5em; color:#000000;"></i>
                         </button>
-                        <button id="microphoneBtn"
-                            style="margin-left:0.5em; background:none; border:none; cursor:pointer;"
-                            title="Stel je vraag met je stem">
-                            <i class="fa-solid fa-microphone" style="font-size:1.5em; color:#000000;"></i>
-                        </button>
                         <button id="thumbsUpBtn"
                             style="margin-left:0.5em; background:none; border:none; cursor:pointer;"
                             title="Goed antwoord">
@@ -4772,7 +4820,6 @@
         // Create an object to store references to the icon buttons
         const chatIcons = {
             speakBtnServer: null,
-            microphoneBtn: null,
             thumbsUpBtn: null,
             thumbsDownBtn: null
         };
@@ -4780,7 +4827,6 @@
         document.addEventListener("DOMContentLoaded", function () {
             // Assign DOM elements to the chatIcons object
             chatIcons.speakBtnServer = document.getElementById('speakBtnServer');
-            chatIcons.microphoneBtn = document.getElementById('microphoneBtn');
             chatIcons.thumbsUpBtn = document.getElementById('thumbsUpBtn');
             chatIcons.thumbsDownBtn = document.getElementById('thumbsDownBtn');
         });
@@ -4796,6 +4842,7 @@
             input.disabled = true;
             sendBtn.disabled = true;
             waitingForAnswer = true;
+            document.getElementById('micBtn').disabled = true;
 
             if (lastQuestion && lastAnswer) {
                 const qaItem = document.createElement('div');
@@ -4846,12 +4893,6 @@
                         });
                     };
                 }
-
-                if (chatIcons.microphoneBtn) {
-                    chatIcons.microphoneBtn.onclick = function () {
-                        // TODO: Add microphone functionality
-                    };
-                }
                 if (chatIcons.thumbsUpBtn) {
                     chatIcons.thumbsUpBtn.onclick = function () {
                         // TODO: Add thumbs up functionality
@@ -4868,6 +4909,7 @@
                 input.disabled = false;
                 sendBtn.disabled = false;
                 waitingForAnswer = false;
+                document.getElementById('micBtn').disabled = false;
                 input.focus();
             }
         }
@@ -4936,6 +4978,50 @@
             addNextChar(i);
         }
 
+        let recognition;
+        let isRecording = false;
+
+        document.getElementById('micBtn').onclick = function () {
+            if (waitingForAnswer) return;
+            if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+                alert("Deze browser ondersteunt geen spraakherkenning.");
+                return;
+            }
+            if (!recognition) {
+                const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+                recognition = new SpeechRecognition();
+                recognition.lang = 'nl-NL';
+                recognition.interimResults = false;
+                recognition.continuous = false;
+
+                recognition.onresult = function (event) {
+                    const transcript = event.results[0][0].transcript;
+                    document.getElementById('userInput').value = transcript;
+                    isRecording = false;
+                    document.getElementById('micBtn').classList.remove('mic-recording');
+                };
+
+                recognition.onerror = function () {
+                    isRecording = false;
+                    document.getElementById('micBtn').classList.remove('mic-recording');
+                };
+
+                recognition.onend = function () {
+                    isRecording = false;
+                    document.getElementById('micBtn').classList.remove('mic-recording');
+                };
+            }
+
+            if (!isRecording) {
+                recognition.start();
+                isRecording = true;
+                document.getElementById('micBtn').classList.add('mic-recording');
+            } else {
+                recognition.stop();
+                isRecording = false;
+                document.getElementById('micBtn').classList.remove('mic-recording');
+            }
+        };
     </script>
 
 
