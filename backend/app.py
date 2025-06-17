@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify, send_from_directory, session
+from flask import Flask, request, jsonify, send_from_directory, session, render_template
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 from datetime import datetime, timedelta, timezone
@@ -20,6 +20,7 @@ import os
 SECRET_KEY = "your-secret-key"
 JWT_ALGORITHM = "HS256"
 TOKEN_EXPIRATION_MINUTES = 30
+UPLOAD_FOLDER = os.path.join(os.path.dirname(__file__), '../Data')
 
 app = Flask(__name__,
             static_folder="../frontend/static",
@@ -29,6 +30,8 @@ app.secret_key = "anonymous-session-key"  # Voor sessies zonder login
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
 db = SQLAlchemy(app)
 
 
@@ -156,6 +159,49 @@ def get_current_user():
         return jsonify({"error": str(e)}), 401
 
 
+collection = client.get_or_create_collection(name="my_documents")
+data_folder = app.config['UPLOAD_FOLDER']
+
+# updates the ChromaDB collection with the files in the data folder
+def process_and_index_files():
+    existing_ids = collection.get()["ids"]
+    if existing_ids:
+        collection.delete(ids=existing_ids)
+
+    text_chunks = []
+    ids = []
+
+    for filename in os.listdir(data_folder):
+        file_path = os.path.join(data_folder, filename)
+        if not os.path.isfile(file_path):
+            continue
+
+        extension = filename.rsplit('.', 1)[-1].lower()
+        content = ""
+
+        try:
+            if extension == "txt":
+                with open(file_path, "r", encoding="utf-8") as f:
+                    content = f.read()
+            elif extension == "pdf":
+                import fitz
+                with fitz.open(file_path) as doc:
+                    content = "\n".join(page.get_text() for page in doc)
+            else:
+                continue  #skips all files that are not txt or pdf 
+
+            chunks = content.split(". ") 
+            text_chunks.extend(chunks)
+            ids.extend([f"{filename}-{i}" for i in range(len(chunks))])
+        except Exception as e:
+            print(f"Fout bij verwerken van {filename}: {e}")
+
+    if text_chunks:
+        embeddings = [model.encode(chunk) for chunk in text_chunks]
+        collection.add(documents=text_chunks, embeddings=embeddings, ids=ids)
+
+process_and_index_files()
+
 @app.route("/")
 def index():
     return send_from_directory(app.template_folder, "frontend.html")
@@ -169,6 +215,82 @@ def login_page():
 @app.route("/dashboard")
 def dashboard():
     return send_from_directory(app.template_folder, "dashboard.html")
+
+
+
+# Data Management
+@app.route("/data_management")
+def data_management():
+    files = os.listdir(app.config['UPLOAD_FOLDER'])
+    return render_template("data_management.html", files=files)
+
+# delete endpoint
+@app.route("/data_management/delete", methods=["POST"])
+def delete_file():
+
+    filename = request.form.get("filename")
+    files = os.listdir(app.config['UPLOAD_FOLDER'])
+    if not filename:
+        return render_template("data_management.html", files=files, message="Geen bestandsnaam opgegeven.", type="error")
+
+    file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+    if os.path.exists(file_path):
+        os.remove(file_path)
+        files = os.listdir(app.config['UPLOAD_FOLDER'])
+        process_and_index_files()
+        return render_template("data_management.html", files=files, message=f"Bestand '{filename}' succesvol verwijderd.", type="success")
+    else:
+        return render_template("data_management.html", files=files, message=f"Bestand '{filename}' niet gevonden.", type="error")
+
+# checks file type
+def allowed_file(filename):
+    ALLOWED_EXTENSIONS = {'txt', 'pdf'}
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+# upload endpoint
+@app.route("/data_management/upload", methods=["POST"])
+def upload_file():
+
+    files = os.listdir(app.config['UPLOAD_FOLDER'])
+    if 'file' not in request.files:
+        return render_template("data_management.html", files=files, message="Geen bestand geselecteerd.", type="error")
+
+    file = request.files['file']
+    if file.filename == '':
+        return render_template("data_management.html", files=files, message="Geen bestand geselecteerd.", type="error")
+
+    if file and allowed_file(file.filename):
+        file.save(os.path.join(app.config['UPLOAD_FOLDER'], file.filename))
+        files = os.listdir(app.config['UPLOAD_FOLDER'])
+        process_and_index_files()
+        return render_template("data_management.html", files=files, message=f"Bestand '{file.filename}' succesvol geüpload.", type="success")
+
+    return render_template("data_management.html", files=files, message="Ongeldig bestandstype.", type="error")
+
+@app.route("/data_management/view", methods=["POST"])
+def view_file():
+    filename = request.form.get("filename")
+    if not filename:
+        return "No filename provided", 400
+
+    filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+
+    if not os.path.exists(filepath):
+        return "File not found", 404
+
+    extension = filename.rsplit('.', 1)[-1].lower()
+
+    content = ""
+    if extension == "txt":
+        with open(filepath, "r", encoding="utf-8") as file:
+            content = file.read()
+
+    return render_template("file_viewer.html", filename=filename, extension=extension, content=content)
+
+@app.route("/uploads/<path:filename>")
+def serve_file(filename):
+    return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
+
 
 
 @app.route("/speak_dutch", methods=["POST"])
