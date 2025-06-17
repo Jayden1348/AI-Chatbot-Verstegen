@@ -4689,7 +4689,7 @@
             outline: none;
             transition: border 0.2s ease, box-shadow 0.2s ease;
             ">
-                    <button onclick="askQuestion()" style="
+            <button onclick="askQuestion()" style="
             background-color: #b21f24;   /* Verstegen-rood */
             color: white;
             border: none;
@@ -4706,6 +4706,13 @@
                         Stuur
                     </button>
                 </div>
+                <div id="lastQuestionContainer" style="
+    display: none;
+    font-size: 1.1em;
+    font-weight: bold;
+    margin-bottom: 0.5em;
+    color: #333;
+"></div>
                 <!-- <h3 style="margin-top: 2em; font-weight: bold; color: #b21f24;">Antwoord:</h3> -->
                 <h3 id="answerHeading" style="display: none; margin-top: 0; font-weight: bold; color: #b21f24;">
                     Antwoord:
@@ -4784,93 +4791,90 @@
             chatIcons.thumbsUpBtn = document.getElementById('thumbsUpBtn');
             chatIcons.thumbsDownBtn = document.getElementById('thumbsDownBtn');
         });
+async function askQuestion() {
+    const input = document.getElementById('userInput');
+    const sendBtn = document.querySelector('button[onclick="askQuestion()"]');
+    const responseDiv = document.getElementById('response');
+    const qaHistory = document.getElementById('qaHistory');
+    const chatWindow = document.getElementById('chatWindow');
+    const answerHeading = document.getElementById('answerHeading');
+    const question = input.value.trim();
+    if (!question || waitingForAnswer) return;
 
-        async function askQuestion() {
-            const input = document.getElementById('userInput');
-            const sendBtn = document.querySelector('button[onclick="askQuestion()"]');
-            const responseDiv = document.getElementById('response');
-            const qaHistory = document.getElementById('qaHistory');
-            const question = input.value.trim();
-            if (!question || waitingForAnswer) return;
+    input.disabled = true;
+    sendBtn.disabled = true;
+    waitingForAnswer = true;
 
-            input.disabled = true;
-            sendBtn.disabled = true;
-            waitingForAnswer = true;
+    // Verplaats vorige Q&A naar geschiedenis
+    if (lastQuestion && lastAnswer) {
+        const qaItem = document.createElement('div');
+        qaItem.style.marginBottom = "1em";
+        qaItem.innerHTML = `
+            <div style="font-weight:bold; color:#b21f24;">Vraag:</div>
+            <div style="margin-bottom:0.5em;">${lastQuestion}</div>
+            <div style="font-weight:bold; color:#005B43;">Antwoord:</div>
+            <div>${lastAnswer}</div>
+            <hr style="margin:1em 0;">
+        `;
+        qaHistory.appendChild(qaItem);
+        qaHistory.style.display = "block";
+    }
 
-            if (lastQuestion && lastAnswer) {
-                const qaItem = document.createElement('div');
-                qaItem.style.marginBottom = "1em";
-                qaItem.innerHTML = `
-                <div style="font-weight:bold; color:#b21f24;">Vraag:</div>
-                <div style="margin-bottom:0.5em;">${lastQuestion}</div>
-                <div style="font-weight:bold; color:#005B43;">Antwoord:</div>
-                <div>${lastAnswer}</div>
-                <hr style="margin:1em 0;">
-            `;
-                qaHistory.appendChild(qaItem);
-                qaHistory.style.display = "block";
-            }
+    // Zet chatbox aan en toon zowel vraag als tijdelijk antwoord
+    chatWindow.style.display = 'block';
+    responseDiv.style.display = 'block';
+    responseDiv.innerHTML = `
+        <div style="font-weight:bold; color:#b21f24;">Vraag:</div>
+        <div style="margin-bottom:0.75em;">${question}</div>
+        <div style="font-weight:bold; color:#005B43;">Antwoord:</div>
+        <div id="liveAnswer">Kruidje denkt na, een moment geduld aub <b><span id="loadingDots"></span></b></div>
+    `;
 
-            chatWindow.style.display = 'block';
-            response.style.display = 'block';
-            answerHeading.style.display = "none";
-            responseDiv.innerHTML = 'Kruidje denkt na, een moment geduld aub<b><span id="loadingDots"></span></b>';
-            showLoadingDots();
-            // Hide all icons while waiting for answer
-            Object.values(chatIcons).forEach(btn => { if (btn) btn.style.display = "none"; });
+    answerHeading.style.display = "none"; // niet meer nodig
+    showLoadingDots();
 
-            try {
-                const res = await fetch("/ask", {
+    Object.values(chatIcons).forEach(btn => { if (btn) btn.style.display = "none"; });
+
+    try {
+        const res = await fetch("/ask", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ question })
+        });
+
+        const data = await res.json();
+        const answerText = data.answer || "Er ging iets mis.";
+        const liveAnswerDiv = document.getElementById('liveAnswer');
+
+        animateTextTyping(liveAnswerDiv, answerText);
+
+        lastQuestion = question;
+        lastAnswer = answerText;
+
+        Object.values(chatIcons).forEach(btn => { if (btn) btn.style.display = "inline-block"; });
+
+        if (chatIcons.speakBtnServer) {
+            chatIcons.speakBtnServer.onclick = async function () {
+                await fetch("/speak_dutch", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ question })
+                    body: JSON.stringify({ text: answerText })
                 });
-
-                const data = await res.json();
-                answerHeading.style.display = 'block';
-                animateTextTyping(responseDiv, data.answer || "Er ging iets mis.");
-
-                lastQuestion = question;
-                lastAnswer = data.answer;
-
-                // Show all icons after answer is received
-                Object.values(chatIcons).forEach(btn => { if (btn) btn.style.display = "inline-block"; });
-
-                // Example: add server speak functionality
-                if (chatIcons.speakBtnServer) {
-                    chatIcons.speakBtnServer.onclick = async function () {
-                        await fetch("/speak_dutch", {
-                            method: "POST",
-                            headers: { "Content-Type": "application/json" },
-                            body: JSON.stringify({ text: data.answer })
-                        });
-                    };
-                }
-
-                if (chatIcons.microphoneBtn) {
-                    chatIcons.microphoneBtn.onclick = function () {
-                        // TODO: Add microphone functionality
-                    };
-                }
-                if (chatIcons.thumbsUpBtn) {
-                    chatIcons.thumbsUpBtn.onclick = function () {
-                        // TODO: Add thumbs up functionality
-                    };
-                }
-                if (chatIcons.thumbsDownBtn) {
-                    chatIcons.thumbsDownBtn.onclick = function () {
-                        // TODO: Add thumbs down functionality
-                    };
-                }
-            } finally {
-                // Enable input and button again
-                hideLoadingDots();
-                input.disabled = false;
-                sendBtn.disabled = false;
-                waitingForAnswer = false;
-                input.focus();
-            }
+            };
         }
+
+    } finally {
+        hideLoadingDots();
+        input.value = "";
+        input.disabled = false;
+        sendBtn.disabled = false;
+        waitingForAnswer = false;
+        input.focus();
+    }
+}
+
+
+
 
         // Pressing Enter also sends the question, but only if not waiting
         document.getElementById('userInput').addEventListener('keydown', function (event) {
