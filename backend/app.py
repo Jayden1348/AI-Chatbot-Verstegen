@@ -1,19 +1,20 @@
-from flask import Flask, request, jsonify, send_from_directory, render_template
+from flask import Flask, request, jsonify, send_from_directory, session, render_template
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from sentence_transformers import SentenceTransformer
+from gtts import gTTS
 import bcrypt
 import jwt
 import chromadb
 import ollama
+import subprocess
+import nltk
+import json
+from uuid import uuid4
+import pygame
+import time
 import os
-from dotenv import load_dotenv
-
-
-# Het zou beter zijn om gebruik te maken van een .env, maar voor het gemak doe ik het nog niet.
-# load_dotenv()
-# SECRET_KEY = os.getenv("SECRET_KEY")
 
 
 SECRET_KEY = "your-secret-key"
@@ -25,6 +26,7 @@ app = Flask(__name__,
             static_folder="../frontend/static",
             template_folder="../frontend")
 CORS(app)
+app.secret_key = "anonymous-session-key"  # Voor sessies zonder login
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -39,10 +41,49 @@ class User(db.Model):
     password = db.Column(db.LargeBinary, nullable=False)
 
 
+model = SentenceTransformer("all-MiniLM-L6-v2")
+client = chromadb.PersistentClient()
+collection = client.get_or_create_collection(name="my_documents")
+
+
+def get_reference_info():
+    with open("../Data/Verstegen_Cao.txt", "r", encoding="utf-8") as f:
+
+        text_chunks = nltk.sent_tokenize(f.read())
+
+    if collection.count() == 0:
+        embeddings = model.encode(text_chunks, convert_to_numpy=True)
+        collection.add(documents=text_chunks, embeddings=embeddings, ids=[
+                       str(i) for i in range(len(text_chunks))])
+
+
+def search_documents(question):
+    query_embedding = model.encode(question)
+    results = collection.query(query_embeddings=[query_embedding])
+
+    if 'documents' in results and results['documents']:
+        return "\n".join(results['documents'][0])
+    return "No relevant documents found."
+
+
+def create_tables():
+    with app.app_context():
+        db.create_all()
+        if not User.query.filter_by(username="HR1").first():
+            hashed_pw = bcrypt.hashpw(
+                "Kruidje".encode("utf-8"), bcrypt.gensalt())
+            user = User(username="HR1", password=hashed_pw)
+            db.session.add(user)
+            db.session.commit()
+            print("Gebruiker 'HR1' aangemaakt.")
+        else:
+            print("Gebruiker 'HR1' bestaat al.")
+
+
 def create_token(username):
     payload = {
         "sub": username,
-        "exp": datetime.utcnow() + timedelta(minutes=TOKEN_EXPIRATION_MINUTES)
+        "exp": datetime.now(timezone.utc) + timedelta(minutes=TOKEN_EXPIRATION_MINUTES)
     }
     return jwt.encode(payload, SECRET_KEY, algorithm=JWT_ALGORITHM)
 
@@ -52,21 +93,22 @@ def decode_token(token):
         payload = jwt.decode(token, SECRET_KEY, algorithms=[JWT_ALGORITHM])
         return payload["sub"]
     except jwt.ExpiredSignatureError:
-        raise Exception("Token is verlopen.")
+        raise jwt.ExpiredSignatureError("Token is verlopen.")
     except jwt.InvalidTokenError:
-        raise Exception("Ongeldig token.")
+        raise jwt.InvalidTokenError("Ongeldige token.")
 
 
-with app.app_context():
-    db.create_all()
-    if not User.query.filter_by(username="HR1").first():
-        hashed_pw = bcrypt.hashpw("Kruidje".encode("utf-8"), bcrypt.gensalt())
-        user = User(username="HR1", password=hashed_pw)
-        db.session.add(user)
-        db.session.commit()
-        print("Gebruiker 'HR1' aangemaakt.")
-    else:
-        print("Gebruiker 'HR1' bestaat al.")
+def speak_dutch(text):
+    tts = gTTS(text=text, lang='nl')
+    filename = "dutch_speech.mp3"
+    tts.save(filename)
+    pygame.mixer.init()
+    pygame.mixer.music.load(filename)
+    pygame.mixer.music.play()
+    while pygame.mixer.music.get_busy():
+        time.sleep(0.1)
+    pygame.mixer.music.unload()
+    os.remove(filename)
 
 
 @app.post("/api/login")
@@ -117,8 +159,6 @@ def get_current_user():
         return jsonify({"error": str(e)}), 401
 
 
-model = SentenceTransformer("all-MiniLM-L6-v2")
-client = chromadb.Client()
 collection = client.get_or_create_collection(name="my_documents")
 data_folder = app.config['UPLOAD_FOLDER']
 
@@ -253,14 +293,26 @@ def serve_file(filename):
 
 
 
+@app.route("/speak_dutch", methods=["POST"])
+def speak_dutch_api():
+    data = request.json
+    text = data.get("text")
+    if text:
+        speak_dutch(text)
+        return jsonify({"status": "ok"})
+    return jsonify({"error": "No text provided"}), 400
+
+
 @app.route("/ask", methods=["POST"])
 def ask():
+    if "chat_id" not in session:
+        session["chat_id"] = str(uuid4())[:8]
+
     data = request.json
     question = data.get("question", "")
-    query_embedding = model.encode(question)
-    results = collection.query(query_embeddings=[query_embedding], n_results=3)
-    context = "\n".join(results['documents'][0])
-    prompt = f"Context:\n{context}\n\nVraag: {question}\nAntwoord in het Nederlands:"
+    context = search_documents(question)
+
+    prompt = f"Context:\n{context}\n\nVraag: {question}\nBeknopt antwoord in het Nederlands:"
 
     try:
         response = ollama.chat(
@@ -271,12 +323,71 @@ def ask():
                 {"role": "user", "content": prompt}
             ]
         )
-        return jsonify({"answer": response['message']['content'].strip()})
+        answer = response['message']['content'].strip()
+
+        log_entry = {
+            "user": question,
+            "bot": answer
+        }
+
+        os.makedirs("chatlogs", exist_ok=True)
+        filepath = "chatlogs/sessions.json"
+
+        if os.path.exists(filepath):
+            with open(filepath, "r", encoding="utf-8") as f:
+                all_logs = json.load(f)
+        else:
+            all_logs = {}
+
+        chat_id = session["chat_id"]
+        if chat_id not in all_logs:
+            all_logs[chat_id] = []
+
+        all_logs[chat_id].append(log_entry)
+
+        with open(filepath, "w", encoding="utf-8") as f:
+            json.dump(all_logs, f, ensure_ascii=False, indent=2)
+
+        return jsonify({"answer": answer, "chat_id": chat_id})
     except Exception as e:
         print(f"UNEXPECTED ERROR IN ASK FUNCTION: {str(e)}")
         return jsonify({"answer": "Er ging iets mis."}), 500
 
 
+@app.get("/history")
+def get_chat_history():
+    chat_id = session.get("chat_id")
+    if not chat_id:
+        return jsonify({"history": []})
+
+    filepath = "chatlogs/sessions.json"
+    if os.path.exists(filepath):
+        with open(filepath, "r", encoding="utf-8") as f:
+            all_logs = json.load(f)
+            return jsonify({"history": all_logs.get(chat_id, [])})
+    return jsonify({"history": []})
+
+
+@app.get("/all_chats")
+def get_all_chats():
+    filepath = "chatlogs/sessions.json"
+    if os.path.exists(filepath):
+        with open(filepath, "r", encoding="utf-8") as f:
+            all_logs = json.load(f)
+            return jsonify(all_logs)
+    return jsonify({})
+
+
 if __name__ == "__main__":
+    print("Natural Language Toolkit wordt bijgewerkt...")
+    nltk.download('punkt_tab')
+    print("Ollama wordt gestart...")
+    process = subprocess.Popen(
+        ['ollama', 'serve'], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    print("Database tables worden geinitialiseerd...")
+    create_tables()
+    print("Model wordt geinitialiseerd...")
+    get_reference_info()
+    print("Web applicatie wordt gestart...")
     app.run(debug=True)
-# Logging level moet nog worden aangepast.
+
