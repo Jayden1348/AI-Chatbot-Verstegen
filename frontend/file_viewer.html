@@ -1,0 +1,86 @@
+
+
+<!DOCTYPE html>
+<html lang="nl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bestand bekijken - Verstegen AI</title>
+    <link rel="stylesheet" href="./static/style.css">
+    <link rel="stylesheet" href="./static/themes.min.css">
+    <style>
+        body {
+            margin: 0;
+            background-color: #f5f5f5;
+            font-family: "Prompt", sans-serif;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #cd0b35;
+            color: white;
+            padding: 15px 30px;
+        }
+
+        .header-left a {
+            color: white;
+            margin-right: 20px;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .header-left a:hover {
+            text-decoration: underline;
+        }
+
+        .header-right button {
+            background-color: white;
+            color: #cd0b35;
+            border: none;
+            padding: 8px 14px;
+            font-size: 14px;
+            font-weight: bold;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .header-right button:hover {
+            background-color: #f1f1f1;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="header">
+        <div class="header-left">
+            <a href="/data_management">Terug naar Data Beheer</a>
+        </div>
+        <div class="header-right">
+            <button onclick="logout()">Uitloggen</button>
+        </div>
+    </div>
+
+    <div class="content">
+        <h1>{{ filename }}</h1>
+
+        {% if extension == 'pdf' %}
+        <iframe src="{{ url_for('serve_file', filename=filename) }}" width="100%" height="600px"></iframe>
+        {% elif extension == 'txt' %}
+        <pre>{{ content }}</pre>
+        {% else %}
+        <p>Unsupported file type.</p>
+        {% endif %}
+    </div>
+
+    <script>
+        function logout() {
+            localStorage.removeItem("token");
+            window.location.href = "/login";
+        }
+    </script>
+</body>
+
+</html>

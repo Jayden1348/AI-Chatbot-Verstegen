@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - Verstegen AI</title>
+    <title>Data Management - Verstegen AI</title>
     <link rel="stylesheet" href="./static/style.css">
     <link rel="stylesheet" href="./static/themes.min.css">
     <style>
@@ -28,7 +28,6 @@
             margin-right: 20px;
             text-decoration: none;
             font-weight: bold;
-            cursor: pointer;
         }
 
         .header-left a:hover {
@@ -62,29 +61,31 @@
             text-transform: uppercase;
         }
 
-        #chat-history {
-            margin: 40px auto;
-            width: 80%;
-            text-align: left;
+        .content form {
+            margin: 20px auto;
         }
 
-        .chat-block {
-            margin-bottom: 30px;
-            padding: 15px;
-            background-color: #ffffff;
-            border-radius: 10px;
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        .content ul {
+            list-style: none;
+            padding: 0;
         }
 
-        .chat-entry {
-            margin-bottom: 10px;
-            padding: 10px;
-            background: #f2f2f2;
-            border-radius: 6px;
+        .content ul li {
+            margin: 10px 0;
         }
 
-        .chat-entry strong {
-            color: #cd0b35;
+        .content ul li button {
+            margin-left: 10px;
+            background-color: #cd0b35;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .content ul li button:hover {
+            background-color: #a00b28;
         }
     </style>
 </head>
@@ -92,8 +93,8 @@
 <body>
     <div class="header">
         <div class="header-left">
+            <a href="/dashboard">Dashboard</a>
             <a href="/data_management">Data beheren</a>
-            <a onclick="loadChats()">Chat beheren</a>
         </div>
         <div class="header-right">
             <button onclick="logout()">Uitloggen</button>
@@ -101,11 +102,35 @@
     </div>
 
     <div class="content">
-        <h1 id="welcome-msg">Welkom terug!</h1>
+        {% if message %}
+        <p class="{{ type }}">{{ message }}</p>
+        {% endif %}
+
+        <h1>Data Management</h1>
+
+        <h2>Upload bestanden</h2>
+        <form method="POST" enctype="multipart/form-data" action="/data_management/upload">
+            <input type="file" name="file">
+            <button type="submit">Upload</button>
+        </form>
+
+        <h2>Overzicht van bestanden</h2>
+        <ul>
+            {% for file in files %}
+            <li>
+                {{ file }}
+                <form method="POST" action="/data_management/delete" style="display:inline;">
+                    <input type="hidden" name="filename" value="{{ file }}">
+                    <button type="submit">Verwijder</button>
+                </form>
+                <form method="POST" action="/data_management/view" style="display:inline;">
+                    <input type="hidden" name="filename" value="{{ file }}">
+                    <button type="submit">Bekijk</button>
+                </form>
+            </li>
+            {% endfor %}
+        </ul>
     </div>
-
-    <div id="chat-history"></div>
-
     <script>
         const token = localStorage.getItem("token");
         if (!token) {
@@ -127,41 +152,7 @@
 
         function logout() {
             localStorage.removeItem("token");
-            window.location.href = "/";
-        }
-
-        function loadChats() {
-            fetch("/all_chats", {
-                headers: {
-                    "Authorization": "Bearer " + token
-                }
-            })
-                .then(res => res.json())
-                .then(data => {
-                    const chatDiv = document.getElementById("chat-history");
-                    chatDiv.innerHTML = "<h2>Chatgeschiedenis</h2>";
-
-                    if (Object.keys(data).length === 0) {
-                        chatDiv.innerHTML += "<p>Geen chats gevonden.</p>";
-                        return;
-                    }
-
-                    for (const [chatId, messages] of Object.entries(data)) {
-                        const chatBlock = document.createElement("div");
-                        chatBlock.className = "chat-block";
-                        chatBlock.innerHTML = `<h3>Chat ID: ${chatId}</h3>`;
-
-                        messages.forEach(entry => {
-                            chatBlock.innerHTML += `
-                                <div class="chat-entry">
-                                    <strong>Gebruiker:</strong> ${entry.user}<br>
-                                    <strong>AI:</strong> ${entry.bot}
-                                </div>`;
-                        });
-
-                        chatDiv.appendChild(chatBlock);
-                    }
-                });
+            window.location.href = "/"; // Redirect to the login page after logout
         }
     </script>
 </body>
