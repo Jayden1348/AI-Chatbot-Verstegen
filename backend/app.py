@@ -122,8 +122,8 @@ client = chromadb.Client()
 collection = client.get_or_create_collection(name="my_documents")
 data_folder = app.config['UPLOAD_FOLDER']
 
+# updates the ChromaDB collection with the files in the data folder
 def process_and_index_files():
-    
     existing_ids = collection.get()["ids"]
     if existing_ids:
         collection.delete(ids=existing_ids)
@@ -144,13 +144,13 @@ def process_and_index_files():
                 with open(file_path, "r", encoding="utf-8") as f:
                     content = f.read()
             elif extension == "pdf":
-                import fitz  # PyMuPDF
+                import fitz
                 with fitz.open(file_path) as doc:
                     content = "\n".join(page.get_text() for page in doc)
             else:
-                continue  #skips all files that are not txt or pdf
+                continue  #skips all files that are not txt or pdf 
 
-            chunks = content.split(". ")  # basic chunking
+            chunks = content.split(". ") 
             text_chunks.extend(chunks)
             ids.extend([f"{filename}-{i}" for i in range(len(chunks))])
         except Exception as e:
@@ -204,7 +204,7 @@ def delete_file():
 
 # checks file type
 def allowed_file(filename):
-    ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'}
+    ALLOWED_EXTENSIONS = {'txt', 'pdf'}
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 # upload endpoint
