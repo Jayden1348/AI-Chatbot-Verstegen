@@ -52,7 +52,7 @@
 
         .content {
             text-align: center;
-            margin-top: 100px;
+            margin-top: 40px;
         }
 
         .content h1 {
@@ -60,6 +60,10 @@
             color: #005B43;
             font-family: "DIN Next LT W04 Heavy Condensed", sans-serif;
             text-transform: uppercase;
+        }
+
+        #chat-section {
+            display: none;
         }
 
         #chat-history {
@@ -86,6 +90,29 @@
         .chat-entry strong {
             color: #cd0b35;
         }
+
+        .label-grid {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .label-item {
+            background-color: #cd0b35;
+            color: white;
+            padding: 10px 18px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 16px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            cursor: pointer;
+        }
+
+        .label-item.active {
+            background-color: #444;
+        }
     </style>
 </head>
 
@@ -93,7 +120,7 @@
     <div class="header">
         <div class="header-left">
             <a href="/data_management">Data beheren</a>
-            <a onclick="loadChats()">Chat beheren</a>
+            <a onclick="showChats()">Chat beheren</a>
         </div>
         <div class="header-right">
             <button onclick="logout()">Uitloggen</button>
@@ -104,7 +131,12 @@
         <h1 id="welcome-msg">Welkom terug!</h1>
     </div>
 
-    <div id="chat-history"></div>
+    <div id="chat-section">
+        <hr style="width: 80%; margin: 40px auto; border: 1px solid #ccc;">
+        <h2 style="text-align: center;">Chatgeschiedenis</h2>
+        <div id="label-list" class="label-grid"></div>
+        <div id="chat-history"></div>
+    </div>
 
     <script>
         const token = localStorage.getItem("token");
@@ -112,7 +144,9 @@
             window.location.href = "/login";
         }
 
-        // Haal gebruikersnaam op
+        let allChats = {};
+        let activeLabel = null;
+
         fetch("/me", {
             headers: {
                 "Authorization": "Bearer " + token
@@ -130,7 +164,13 @@
             window.location.href = "/";
         }
 
-        function loadChats() {
+        function showChats() {
+            document.getElementById("chat-section").style.display = "block";
+            loadLabels();
+            loadChats();
+        }
+
+        function loadChats(filterLabel = null) {
             fetch("/all_chats", {
                 headers: {
                     "Authorization": "Bearer " + token
@@ -138,30 +178,100 @@
             })
                 .then(res => res.json())
                 .then(data => {
-                    const chatDiv = document.getElementById("chat-history");
-                    chatDiv.innerHTML = "<h2>Chatgeschiedenis</h2>";
+                    allChats = data;
+                    displayChats(filterLabel);
+                });
+        }
 
-                    if (Object.keys(data).length === 0) {
-                        chatDiv.innerHTML += "<p>Geen chats gevonden.</p>";
-                        return;
-                    }
+        function displayChats(filterLabel = null) {
+            const chatDiv = document.getElementById("chat-history");
+            chatDiv.innerHTML = "";
 
-                    for (const [chatId, messages] of Object.entries(data)) {
-                        const chatBlock = document.createElement("div");
-                        chatBlock.className = "chat-block";
-                        chatBlock.innerHTML = `<h3>Chat ID: ${chatId}</h3>`;
+            const keywords = {
+                vakantie: ["vakantie", "vakantiedagen", "verlof", "vrij nemen", "zomervakantie", "kerstvakantie", "feestdag"],
+                ziekmelding: ["ziekmelden", "ziekmelding", "ziek", "ziek thuis", "ziekte", "griep", "meld ziek"],
+                contract: ["contract", "arbeidsovereenkomst", "verlenging", "tijdelijk", "vast contract", "proeftijd", "ontslag"],
+                salaris: ["salaris", "loon", "betaling", "loonstrook", "maandsalaris", "salarisbetaling", "uren uitbetaald"],
+                werktijden: ["rooster", "werktijden", "diensten", "ploegendienst", "werktijd", "overwerken", "urenregistratie"],
+                pensioen: ["pensioen", "pensioenregeling", "pensioenfonds", "met pensioen", "aow", "opbouw"],
+                onboarding: ["inwerken", "introductie", "welkom", "starten", "eerste werkdag", "handleiding", "instructieboekje"],
+                beoordeling: ["functioneringsgesprek", "beoordeling", "evaluatie", "functioneren", "prestatie", "ontwikkelgesprek"],
+                opleiding: ["opleiding", "training", "bijscholing", "cursus", "leren", "ontwikkelen", "studie", "leermodule"],
+                reiskosten: ["reiskosten", "reiskostenvergoeding", "ov", "kilometervergoeding", "reisvergoeding", "woon-werkverkeer"],
+                verlofregelingen: ["ouderschapsverlof", "zwangerschapsverlof", "zorgverlof", "bijzonder verlof", "calamiteitenverlof"],
+                veiligheid: ["veiligheid", "bhv", "bedrijfshulpverlening", "veiligheidsinstructies", "incident", "ongeval"],
+                cao: ["cao", "collectieve arbeidsovereenkomst", "cao afspraken", "cao verstegen"],
+                klokken: ["tijdregistratie", "klokken", "inklokken", "uitklokken", "tijdklok", "uren boeken"],
+                overig: []  // Fallback-categorie
+            };
 
-                        messages.forEach(entry => {
-                            chatBlock.innerHTML += `
-                                <div class="chat-entry">
-                                    <strong>Gebruiker:</strong> ${entry.user}<br>
-                                    <strong>AI:</strong> ${entry.bot}
-                                </div>`;
-                        });
 
-                        chatDiv.appendChild(chatBlock);
+            for (const [chatId, messages] of Object.entries(allChats)) {
+                if (filterLabel) {
+                    const matches = messages.some(entry => {
+                        const userText = entry.user.toLowerCase();
+
+                        if (filterLabel === "overig") {
+                            // Alleen tonen als géén van de andere categorieën matchen
+                            return !Object.entries(keywords).some(([label, kws]) =>
+                                label !== "overig" && kws.some(kw => userText.includes(kw))
+                            );
+                        }
+
+                        return keywords[filterLabel].some(kw => userText.includes(kw));
+                    });
+
+                    if (!matches) continue;
+                }
+                const chatBlock = document.createElement("div");
+                chatBlock.className = "chat-block";
+                chatBlock.innerHTML = `<h3>Chat ID: ${chatId}</h3>`;
+
+                messages.forEach(entry => {
+                    chatBlock.innerHTML += `
+                        <div class="chat-entry">
+                            <strong>Gebruiker:</strong> ${entry.user}<br>
+                            <strong>AI:</strong> ${entry.bot}
+                        </div>`;
+                });
+
+                chatDiv.appendChild(chatBlock);
+            }
+        }
+
+        function loadLabels() {
+            fetch("/chat_labels", {
+                headers: {
+                    "Authorization": "Bearer " + token
+                }
+            })
+                .then(res => res.json())
+                .then(data => {
+                    const container = document.getElementById("label-list");
+                    container.innerHTML = "";
+                    for (const [label, count] of Object.entries(data)) {
+                        if (count === 0) continue;
+                        const div = document.createElement("div");
+                        div.className = "label-item";
+                        div.textContent = `${label} (${count})`;
+                        div.onclick = () => toggleFilter(div, label);
+                        container.appendChild(div);
                     }
                 });
+        }
+
+        function toggleFilter(element, label) {
+            const items = document.querySelectorAll(".label-item");
+            items.forEach(el => el.classList.remove("active"));
+
+            if (activeLabel === label) {
+                activeLabel = null;
+                displayChats();
+            } else {
+                activeLabel = label;
+                element.classList.add("active");
+                displayChats(label);
+            }
         }
     </script>
 </body>

@@ -163,6 +163,8 @@ collection = client.get_or_create_collection(name="my_documents")
 data_folder = app.config['UPLOAD_FOLDER']
 
 # updates the ChromaDB collection with the files in the data folder
+
+
 def process_and_index_files():
     existing_ids = collection.get()["ids"]
     if existing_ids:
@@ -188,9 +190,9 @@ def process_and_index_files():
                 with fitz.open(file_path) as doc:
                     content = "\n".join(page.get_text() for page in doc)
             else:
-                continue  #skips all files that are not txt or pdf 
+                continue  # skips all files that are not txt or pdf
 
-            chunks = content.split(". ") 
+            chunks = content.split(". ")
             text_chunks.extend(chunks)
             ids.extend([f"{filename}-{i}" for i in range(len(chunks))])
         except Exception as e:
@@ -200,7 +202,9 @@ def process_and_index_files():
         embeddings = [model.encode(chunk) for chunk in text_chunks]
         collection.add(documents=text_chunks, embeddings=embeddings, ids=ids)
 
+
 process_and_index_files()
+
 
 @app.route("/")
 def index():
@@ -217,7 +221,6 @@ def dashboard():
     return send_from_directory(app.template_folder, "dashboard.html")
 
 
-
 # Data Management
 @app.route("/data_management")
 def data_management():
@@ -225,6 +228,8 @@ def data_management():
     return render_template("data_management.html", files=files)
 
 # delete endpoint
+
+
 @app.route("/data_management/delete", methods=["POST"])
 def delete_file():
 
@@ -243,11 +248,15 @@ def delete_file():
         return render_template("data_management.html", files=files, message=f"Bestand '{filename}' niet gevonden.", type="error")
 
 # checks file type
+
+
 def allowed_file(filename):
     ALLOWED_EXTENSIONS = {'txt', 'pdf'}
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 # upload endpoint
+
+
 @app.route("/data_management/upload", methods=["POST"])
 def upload_file():
 
@@ -266,6 +275,7 @@ def upload_file():
         return render_template("data_management.html", files=files, message=f"Bestand '{file.filename}' succesvol geüpload.", type="success")
 
     return render_template("data_management.html", files=files, message="Ongeldig bestandstype.", type="error")
+
 
 @app.route("/data_management/view", methods=["POST"])
 def view_file():
@@ -287,10 +297,54 @@ def view_file():
 
     return render_template("file_viewer.html", filename=filename, extension=extension, content=content)
 
+
 @app.route("/uploads/<path:filename>")
 def serve_file(filename):
     return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
 
+
+@app.get("/chat_labels")
+def get_chat_labels():
+    filepath = "chatlogs/sessions.json"
+    if not os.path.exists(filepath):
+        return jsonify({})
+
+    with open(filepath, "r", encoding="utf-8") as f:
+        all_logs = json.load(f)
+
+    keyword_labels = {
+        "vakantie": ["vakantie", "vakantiedagen", "verlof", "vrij nemen", "zomervakantie", "kerstvakantie", "feestdag"],
+        "ziekmelding": ["ziekmelden", "ziekmelding", "ziek", "ziek thuis", "ziekte", "griep", "meld ziek"],
+        "contract": ["contract", "arbeidsovereenkomst", "verlenging", "tijdelijk", "vast contract", "proeftijd", "ontslag"],
+        "salaris": ["salaris", "loon", "betaling", "loonstrook", "maandsalaris", "salarisbetaling", "uren uitbetaald"],
+        "werktijden": ["rooster", "werktijden", "diensten", "ploegendienst", "werktijd", "overwerken", "urenregistratie"],
+        "pensioen": ["pensioen", "pensioenregeling", "pensioenfonds", "met pensioen", "aow", "opbouw"],
+        "onboarding": ["inwerken", "introductie", "welkom", "starten", "eerste werkdag", "handleiding", "instructieboekje"],
+        "beoordeling": ["functioneringsgesprek", "beoordeling", "evaluatie", "functioneren", "prestatie", "ontwikkelgesprek"],
+        "opleiding": ["opleiding", "training", "bijscholing", "cursus", "leren", "ontwikkelen", "studie", "leermodule"],
+        "reiskosten": ["reiskosten", "reiskostenvergoeding", "ov", "kilometervergoeding", "reisvergoeding", "woon-werkverkeer"],
+        "verlofregelingen": ["ouderschapsverlof", "zwangerschapsverlof", "zorgverlof", "bijzonder verlof", "calamiteitenverlof"],
+        "veiligheid": ["veiligheid", "bhv", "bedrijfshulpverlening", "veiligheidsinstructies", "incident", "ongeval"],
+        "cao": ["cao", "collectieve arbeidsovereenkomst", "cao afspraken", "cao verstegen"],
+        "klokken": ["tijdregistratie", "klokken", "inklokken", "uitklokken", "tijdklok", "uren boeken"]
+    }
+
+    label_counts = {label: 0 for label in keyword_labels}
+    label_counts["overig"] = 0
+
+    for messages in all_logs.values():
+        for entry in messages:
+            text = entry.get("user", "").lower()
+            matched = False
+            for label, keywords in keyword_labels.items():
+                if any(kw in text for kw in keywords):
+                    label_counts[label] += 1
+                    matched = True
+                    break
+            if not matched:
+                label_counts["overig"] += 1
+
+    return jsonify(label_counts)
 
 
 @app.route("/speak_dutch", methods=["POST"])
@@ -390,4 +444,3 @@ if __name__ == "__main__":
     get_reference_info()
     print("Web applicatie wordt gestart...")
     app.run(debug=True)
-
