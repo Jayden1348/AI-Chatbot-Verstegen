@@ -145,7 +145,10 @@
     <div id="chat-section">
         <hr style="width: 80%; margin: 40px auto; border: 1px solid #ccc;">
         <h2 style="text-align: center;">Chatgeschiedenis</h2>
-        <div id="label-list" class="label-grid"></div>
+        <div id="label-list">
+            <div id="feedback-filters" class="label-grid"></div>
+            <div id="category-filters" class="label-grid"></div>
+        </div>
         <div id="chat-history"></div>
     </div>
 
@@ -177,10 +180,8 @@
 
         function showChats() {
             document.getElementById("chat-section").style.display = "block";
-            loadLabels();
-            loadChats();
+            loadChats(); // loadChats will call loadLabels after fetching
         }
-
         function loadChats(filterLabel = null) {
             fetch("/all_chats", {
                 headers: {
@@ -190,9 +191,11 @@
                 .then(res => res.json())
                 .then(data => {
                     allChats = data;
+                    loadLabels(); // <-- call here so allChats is filled
                     displayChats(filterLabel);
                 });
         }
+
 
         function displayChats(filterLabel = null) {
             const chatDiv = document.getElementById("chat-history");
@@ -216,24 +219,32 @@
                 overig: []  // Fallback-categorie
             };
 
-
             for (const [chatId, messages] of Object.entries(allChats)) {
                 if (filterLabel) {
-                    const matches = messages.some(entry => {
-                        const userText = entry.user.toLowerCase();
+                    let matches = false;
 
-                        if (filterLabel === "overig") {
-                            // Alleen tonen als géén van de andere categorieën matchen
-                            return !Object.entries(keywords).some(([label, kws]) =>
-                                label !== "overig" && kws.some(kw => userText.includes(kw))
-                            );
-                        }
+                    if (filterLabel === "feedback_good") {
+                        matches = messages.some(entry => entry.feedback === 1);
+                    } else if (filterLabel === "feedback_bad") {
+                        matches = messages.some(entry => entry.feedback === -1);
+                    } else {
+                        matches = messages.some(entry => {
+                            const userText = entry.user.toLowerCase();
 
-                        return keywords[filterLabel].some(kw => userText.includes(kw));
-                    });
+                            if (filterLabel === "overig") {
+                                // Alleen tonen als géén van de andere categorieën matchen
+                                return !Object.entries(keywords).some(([label, kws]) =>
+                                    label !== "overig" && kws.some(kw => userText.includes(kw))
+                                );
+                            }
+
+                            return keywords[filterLabel].some(kw => userText.includes(kw));
+                        });
+                    }
 
                     if (!matches) continue;
                 }
+                // ...existing code for rendering chat blocks...
                 const chatBlock = document.createElement("div");
                 chatBlock.className = "chat-block";
                 chatBlock.innerHTML = `<h3>Chat ID: ${chatId}</h3>`;
@@ -249,11 +260,11 @@
                         feedbackClass = "feedback-bad";
                     }
                     chatBlock.innerHTML += `
-        <div class="chat-entry ${feedbackClass}">
-            <strong>Gebruiker:</strong> ${entry.user}<br>
-            <strong>AI:</strong> ${entry.bot}<br>
-            ${feedbackIcon ? `<strong>Feedback: </strong>${feedbackIcon}` : ""}
-        </div>`;
+<div class="chat-entry ${feedbackClass}">
+    <strong>Gebruiker:</strong> ${entry.user}<br>
+    <strong>AI:</strong> ${entry.bot}<br>
+    ${feedbackIcon ? `<strong>Feedback: </strong>${feedbackIcon}` : ""}
+</div>`;
                 });
 
                 chatDiv.appendChild(chatBlock);
@@ -268,19 +279,50 @@
             })
                 .then(res => res.json())
                 .then(data => {
-                    const container = document.getElementById("label-list");
-                    container.innerHTML = "";
+                    // Ensure both containers exist
+                    let labelList = document.getElementById("label-list");
+                    labelList.innerHTML = `
+                <div id="feedback-filters" class="label-grid"></div>
+                <div id="category-filters" class="label-grid"></div>
+            `;
+                    const feedbackContainer = document.getElementById("feedback-filters");
+                    const categoryContainer = document.getElementById("category-filters");
+
+                    // Calculate feedback counts
+                    let goodCount = 0;
+                    let badCount = 0;
+                    for (const messages of Object.values(allChats)) {
+                        if (messages.some(entry => entry.feedback === 1)) goodCount++;
+                        if (messages.some(entry => entry.feedback === -1)) badCount++;
+                    }
+
+                    // Add feedback filters (top row)
+                    if (goodCount > 0) {
+                        const goodDiv = document.createElement("div");
+                        goodDiv.className = "label-item";
+                        goodDiv.textContent = `Goed antwoord 👍(${goodCount})`;
+                        goodDiv.onclick = () => toggleFilter(goodDiv, "feedback_good");
+                        feedbackContainer.appendChild(goodDiv);
+                    }
+                    if (badCount > 0) {
+                        const badDiv = document.createElement("div");
+                        badDiv.className = "label-item";
+                        badDiv.textContent = `Slecht antwoord 👎(${badCount})`;
+                        badDiv.onclick = () => toggleFilter(badDiv, "feedback_bad");
+                        feedbackContainer.appendChild(badDiv);
+                    }
+
+                    // Add keyword/category filters (bottom row)
                     for (const [label, count] of Object.entries(data)) {
                         if (count === 0) continue;
                         const div = document.createElement("div");
                         div.className = "label-item";
                         div.textContent = `${label} (${count})`;
                         div.onclick = () => toggleFilter(div, label);
-                        container.appendChild(div);
+                        categoryContainer.appendChild(div);
                     }
-                });
+                })
         }
-
         function toggleFilter(element, label) {
             const items = document.querySelectorAll(".label-item");
             items.forEach(el => el.classList.remove("active"));
