@@ -4716,18 +4716,18 @@
                 </h2>
                 <div style="display: flex; gap: 1em; align-items: center; margin-bottom: 1.5em;">
                     <input type="text" id="userInput" class="input-line" placeholder="Typ hier je vraag..." style="
-        width: 190%;
-        height: 1.5em;
-        font-size: 1.1em;
-        padding: 0.75em 1em;
-        border: 1px solid #ddd;
-        border-radius: 10px;
-        background-color: #f4f4f4;
-        color: #333;
-        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
-        outline: none;
-        transition: border 0.2s ease, box-shadow 0.2s ease;
-    ">
+            width: 100%;
+            height: 1.5em;
+            font-size: 1.1em;
+            padding: 0.75em 1em;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            background-color: #f4f4f4;
+            color: #333;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+            outline: none;
+            transition: border 0.2s ease, box-shadow 0.2s ease;
+            ">
                     <button id="micBtn" type="button" style="
     border: 1px solid #ddd;
     border-radius: 10px;
@@ -4742,23 +4742,31 @@
     " title="Spreek je vraag in">
                         <i class="fa-solid fa-microphone" style="font-size:1.5em;"></i>
                     </button>
+
                     <button onclick="askQuestion()" style="
-        background-color: #b21f24;
-        color: white;
-        border: none;
-        padding: 0.75em 2em;
-        font-size: 1.1em;
-        font-weight: bold;
-        border-radius: 8px;
-        cursor: pointer;
-        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-        margin-top:1.5em;
-        margin-bottom: 1.5em;
-        transition: background-color 0.3s ease, transform 0.2s ease;
-    ">
+            background-color: #b21f24; 
+            color: white;
+            border: none;
+            padding: 0.75em 2em;
+            font-size: 1.1em;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            margin-top:1.5em;
+            margin-bottom: 1.5em;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            ">
                         Stuur
                     </button>
                 </div>
+                <div id="lastQuestionContainer" style="
+    display: none;
+    font-size: 1.1em;
+    font-weight: bold;
+    margin-bottom: 0.5em;
+    color: #333;
+"></div>
                 <!-- <h3 style="margin-top: 2em; font-weight: bold; color: #b21f24;">Antwoord:</h3> -->
                 <h3 id="answerHeading" style="display: none; margin-top: 0; font-weight: bold; color: #b21f24;">
                     Antwoord:
@@ -4775,7 +4783,7 @@
   overflow-y: auto;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 ">
-                    <div style="display: flex; align-items: center;">
+                    <div style="display: flex; align-items: flex-start;">
                         <div id="response" style="
               display:none;
               background-color: rgb(255, 255, 255);
@@ -4789,21 +4797,22 @@
               width: 1000px
             ">
                         </div>
-                        <button id="speakBtnServer"
-                            style="margin-left:0.5em;display:none; background:none; border:none; cursor:pointer;"
-                            title="Laat het antwoord uitspreken">
-                            <i class="fa-solid fa-volume-high" style="font-size:1.5em; color:#000000;"></i>
-                        </button>
-                        <button id="thumbsUpBtn"
-                            style="margin-left:0.5em; background:none; border:none; cursor:pointer;"
-                            title="Goed antwoord">
-                            <i class="fa-solid fa-thumbs-up" style="font-size:1.5em; color:#005B43;"></i>
-                        </button>
-                        <button id="thumbsDownBtn"
-                            style="margin-left:0.5em; background:none; border:none; cursor:pointer;"
-                            title="Slecht antwoord">
-                            <i class="fa-solid fa-thumbs-down" style="font-size:1.5em; color:#b21f24;"></i>
-                        </button>
+                        <div style="display: flex; flex-direction: column; margin-left: 0.5em;margin-top: 0.33em;">
+                            <button id="speakBtnServer"
+                                style="margin-bottom:0.5em; background:none; border:none; cursor:pointer; display:none;"
+                                title="Laat het antwoord uitspreken">
+                                <i class="fa-solid fa-volume-high" style="font-size:1.5em; color:#000000;"></i>
+                            </button>
+                            <button id="thumbsUpBtn"
+                                style="margin-bottom:0.5em; background:none; border:none; cursor:pointer;"
+                                title="Goed antwoord">
+                                <i class="fa-solid fa-thumbs-up" style="font-size:1.5em; color:#005B43;"></i>
+                            </button>
+                            <button id="thumbsDownBtn" style="background:none; border:none; cursor:pointer;"
+                                title="Slecht antwoord">
+                                <i class="fa-solid fa-thumbs-down" style="font-size:1.5em; color:#b21f24;"></i>
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -4830,12 +4839,13 @@
             chatIcons.thumbsUpBtn = document.getElementById('thumbsUpBtn');
             chatIcons.thumbsDownBtn = document.getElementById('thumbsDownBtn');
         });
-
         async function askQuestion() {
             const input = document.getElementById('userInput');
             const sendBtn = document.querySelector('button[onclick="askQuestion()"]');
             const responseDiv = document.getElementById('response');
             const qaHistory = document.getElementById('qaHistory');
+            const chatWindow = document.getElementById('chatWindow');
+            const answerHeading = document.getElementById('answerHeading');
             const question = input.value.trim();
             if (!question || waitingForAnswer) return;
 
@@ -4844,26 +4854,34 @@
             waitingForAnswer = true;
             document.getElementById('micBtn').disabled = true;
 
+            // Verplaats vorige Q&A naar geschiedenis
             if (lastQuestion && lastAnswer) {
                 const qaItem = document.createElement('div');
                 qaItem.style.marginBottom = "1em";
                 qaItem.innerHTML = `
-                <div style="font-weight:bold; color:#b21f24;">Vraag:</div>
-                <div style="margin-bottom:0.5em;">${lastQuestion}</div>
-                <div style="font-weight:bold; color:#005B43;">Antwoord:</div>
-                <div>${lastAnswer}</div>
-                <hr style="margin:1em 0;">
-            `;
+            <div style="font-weight:bold; color:#b21f24;">Vraag:</div>
+            <div style="margin-bottom:0.5em;">${lastQuestion}</div>
+            <div style="font-weight:bold; color:#005B43;">Antwoord:</div>
+            <div>${lastAnswer}</div>
+            <hr style="margin:1em 0;">
+        `;
                 qaHistory.appendChild(qaItem);
                 qaHistory.style.display = "block";
             }
 
+            // Zet chatbox aan en toon zowel vraag als tijdelijk antwoord
             chatWindow.style.display = 'block';
-            response.style.display = 'block';
-            answerHeading.style.display = "none";
-            responseDiv.innerHTML = 'Kruidje denkt na, een moment geduld aub<b><span id="loadingDots"></span></b>';
+            responseDiv.style.display = 'block';
+            responseDiv.innerHTML = `
+        <div style="font-weight:bold; color:#b21f24;">Vraag:</div>
+        <div style="margin-bottom:0.75em;">${question}</div>
+        <div style="font-weight:bold; color:#005B43;">Antwoord:</div>
+        <div id="liveAnswer">Kruidje denkt na, een moment geduld aub<b><span id="loadingDots"></span></b></div>
+    `;
+
+            answerHeading.style.display = "none"; // niet meer nodig
             showLoadingDots();
-            // Hide all icons while waiting for answer
+
             Object.values(chatIcons).forEach(btn => { if (btn) btn.style.display = "none"; });
 
             try {
@@ -4874,38 +4892,39 @@
                 });
 
                 const data = await res.json();
-                answerHeading.style.display = 'block';
-                animateTextTyping(responseDiv, data.answer || "Er ging iets mis.");
+                const answerText = data.answer || "Er ging iets mis.";
+                const liveAnswerDiv = document.getElementById('liveAnswer');
+
+                animateTextTyping(liveAnswerDiv, answerText);
 
                 lastQuestion = question;
-                lastAnswer = data.answer;
+                lastAnswer = answerText;
 
-                // Show all icons after answer is received
                 Object.values(chatIcons).forEach(btn => { if (btn) btn.style.display = "inline-block"; });
 
-                // Example: add server speak functionality
                 if (chatIcons.speakBtnServer) {
                     chatIcons.speakBtnServer.onclick = async function () {
                         await fetch("/speak_dutch", {
                             method: "POST",
                             headers: { "Content-Type": "application/json" },
-                            body: JSON.stringify({ text: data.answer })
+                            body: JSON.stringify({ text: answerText })
                         });
                     };
                 }
-                if (chatIcons.thumbsUpBtn) {
-                    chatIcons.thumbsUpBtn.onclick = function () {
-                        // TODO: Add thumbs up functionality
-                    };
-                }
-                if (chatIcons.thumbsDownBtn) {
-                    chatIcons.thumbsDownBtn.onclick = function () {
-                        // TODO: Add thumbs down functionality
-                    };
-                }
+                // if (chatIcons.thumbsUpBtn) {
+                //     chatIcons.thumbsUpBtn.onclick = function () {
+                //         // TODO: Add thumbs up functionality
+                //     };
+                // }
+                // if (chatIcons.thumbsDownBtn) {
+                //     chatIcons.thumbsDownBtn.onclick = function () {
+                //         // TODO: Add thumbs down functionality
+                //     };
+                // }
+
             } finally {
-                // Enable input and button again
                 hideLoadingDots();
+                input.value = "";
                 input.disabled = false;
                 sendBtn.disabled = false;
                 waitingForAnswer = false;
@@ -4913,6 +4932,9 @@
                 input.focus();
             }
         }
+
+
+
 
         // Pressing Enter also sends the question, but only if not waiting
         document.getElementById('userInput').addEventListener('keydown', function (event) {
@@ -5022,6 +5044,7 @@
                 document.getElementById('micBtn').classList.remove('mic-recording');
             }
         };
+
     </script>
 
 
