@@ -4261,6 +4261,71 @@
             }
         }
 
+        #micBtn {
+            background: white;
+            color: black;
+            border: 2.5px solid #ddd;
+            border-radius: 10px;
+            padding: 0.75em 1em;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+            transition: border 0.2s, box-shadow 0.2s, background 0.5s, color 0.5s;
+            margin-left: 0.1em;
+            margin-right: 0.1em;
+            /* Fixed width/height if you want even more control */
+            /* width: 56px; height: 56px; */
+        }
+
+        #micBtn .fa-microphone {
+            color: black;
+            font-size: 1.5em;
+            transition: color 0.5s, transform 0.3s;
+            /* Center icon if needed */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #micBtn.mic-recording {
+            background: #b21f24;
+            color: white;
+            border-width: 1.5px;
+        }
+
+        #micBtn.mic-recording .fa-microphone {
+            color: white;
+            transform: scale(1.25);
+            /* Grows the icon */
+        }
+
+        .icon-selected {
+            border-radius: 50% !important;
+            border: 2px solid #bbb !important;
+            transform: scale(1.10);
+            transition: background 0.2s, transform 0.2s;
+            width: 40px !important;
+            height: 40px !important;
+            padding: 0 !important;
+            display: flex !important;
+            align-items: center;
+            justify-content: center;
+            box-sizing: border-box;
+        }
+
+        /* Thumbs up: light green background when selected */
+        #thumbsUpBtn.icon-selected {
+            background: #d4f7d4 !important;
+            /* light green */
+        }
+
+        /* Thumbs down: light red background when selected */
+        #thumbsDownBtn.icon-selected {
+            background: #f7d4d4 !important;
+            /* light red */
+        }
+
         @media only screen and (max-height: 487),
         only screen and (max-width: 767px) {
             .bzfy-o-popup.bzfy-o-media-uploader-iframe-container {
@@ -4376,12 +4441,12 @@
                             <ul>
                                 <li
                                     class="wpml-ls-slot-shortcode_actions wpml-ls-item wpml-ls-item-nl wpml-ls-current-language wpml-ls-first-item wpml-ls-item-legacy-list-horizontal">
-                                    <a href="https://verstegen.nl/contact/" class="wpml-ls-link">
+                                    <a href="/" class="wpml-ls-link">
                                         <span class="wpml-ls-native">NL</span></a>
                                 </li>
                                 <li
                                     class="wpml-ls-slot-shortcode_actions wpml-ls-item wpml-ls-item-en wpml-ls-last-item wpml-ls-item-legacy-list-horizontal">
-                                    <a href="https://verstegen.nl/en/contact/" class="wpml-ls-link">
+                                    <a href="/en" class="wpml-ls-link">
                                         <span class="wpml-ls-native" lang="en">EN</span></a>
                                 </li>
                             </ul>
@@ -4689,8 +4754,23 @@
             outline: none;
             transition: border 0.2s ease, box-shadow 0.2s ease;
             ">
-            <button onclick="askQuestion()" style="
-            background-color: #b21f24;   /* Verstegen-rood */
+                    <button id="micBtn" type="button" style="
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 0.75em 1em;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    transition: border 0.2s ease, box-shadow 0.2s ease;
+    margin-left: 0.1em;
+    margin-right: 0.1em;
+    " title="Spreek je vraag in">
+                        <i class="fa-solid fa-microphone" style="font-size:1.5em;"></i>
+                    </button>
+
+                    <button onclick="askQuestion()" style="
+            background-color: #b21f24; 
             color: white;
             border: none;
             padding: 0.75em 2em;
@@ -4729,7 +4809,7 @@
   overflow-y: auto;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 ">
-                    <div style="display: flex; align-items: center;">
+                    <div style="display: flex; align-items: flex-start;">
                         <div id="response" style="
               display:none;
               background-color: rgb(255, 255, 255);
@@ -4743,26 +4823,22 @@
               width: 1000px
             ">
                         </div>
-                        <button id="speakBtnServer"
-                            style="margin-left:0.5em;display:none; background:none; border:none; cursor:pointer;"
-                            title="Laat het antwoord uitspreken">
-                            <i class="fa-solid fa-volume-high" style="font-size:1.5em; color:#000000;"></i>
-                        </button>
-                        <button id="microphoneBtn"
-                            style="margin-left:0.5em; background:none; border:none; cursor:pointer;"
-                            title="Stel je vraag met je stem">
-                            <i class="fa-solid fa-microphone" style="font-size:1.5em; color:#000000;"></i>
-                        </button>
-                        <button id="thumbsUpBtn"
-                            style="margin-left:0.5em; background:none; border:none; cursor:pointer;"
-                            title="Goed antwoord">
-                            <i class="fa-solid fa-thumbs-up" style="font-size:1.5em; color:#005B43;"></i>
-                        </button>
-                        <button id="thumbsDownBtn"
-                            style="margin-left:0.5em; background:none; border:none; cursor:pointer;"
-                            title="Slecht antwoord">
-                            <i class="fa-solid fa-thumbs-down" style="font-size:1.5em; color:#b21f24;"></i>
-                        </button>
+                        <div style="display: flex; flex-direction: column; margin-left: 0.5em;margin-top: 0.33em;">
+                            <button id="speakBtnServer"
+                                style="margin-bottom:0.5em; background:none; border:none; cursor:pointer; display:none;"
+                                title="Laat het antwoord uitspreken">
+                                <i class="fa-solid fa-volume-high" style="font-size:1.5em; color:#000000;"></i>
+                            </button>
+                            <button id="thumbsUpBtn"
+                                style="margin-bottom:0.5em; background:none; border:none; cursor:pointer;"
+                                title="Goed antwoord">
+                                <i class="fa-solid fa-thumbs-up" style="font-size:1.5em; color:#005B43;"></i>
+                            </button>
+                            <button id="thumbsDownBtn" style="background:none; border:none; cursor:pointer;"
+                                title="Slecht antwoord">
+                                <i class="fa-solid fa-thumbs-down" style="font-size:1.5em; color:#b21f24;"></i>
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -4775,11 +4851,11 @@
         let lastAnswer = null;
         let waitingForAnswer = false;
         let loadingInterval = null;
+        let lastFeedback = null
 
         // Create an object to store references to the icon buttons
         const chatIcons = {
             speakBtnServer: null,
-            microphoneBtn: null,
             thumbsUpBtn: null,
             thumbsDownBtn: null
         };
@@ -4787,91 +4863,104 @@
         document.addEventListener("DOMContentLoaded", function () {
             // Assign DOM elements to the chatIcons object
             chatIcons.speakBtnServer = document.getElementById('speakBtnServer');
-            chatIcons.microphoneBtn = document.getElementById('microphoneBtn');
             chatIcons.thumbsUpBtn = document.getElementById('thumbsUpBtn');
             chatIcons.thumbsDownBtn = document.getElementById('thumbsDownBtn');
         });
-async function askQuestion() {
-    const input = document.getElementById('userInput');
-    const sendBtn = document.querySelector('button[onclick="askQuestion()"]');
-    const responseDiv = document.getElementById('response');
-    const qaHistory = document.getElementById('qaHistory');
-    const chatWindow = document.getElementById('chatWindow');
-    const answerHeading = document.getElementById('answerHeading');
-    const question = input.value.trim();
-    if (!question || waitingForAnswer) return;
+        async function askQuestion() {
+            const input = document.getElementById('userInput');
+            const sendBtn = document.querySelector('button[onclick="askQuestion()"]');
+            const responseDiv = document.getElementById('response');
+            const qaHistory = document.getElementById('qaHistory');
+            const chatWindow = document.getElementById('chatWindow');
+            const answerHeading = document.getElementById('answerHeading');
+            const question = input.value.trim();
+            if (!question || waitingForAnswer) return;
 
-    input.disabled = true;
-    sendBtn.disabled = true;
-    waitingForAnswer = true;
+            let prevFeedback = lastFeedback;
+            input.disabled = true;
+            sendBtn.disabled = true;
+            waitingForAnswer = true;
+            document.getElementById('micBtn').disabled = true;
 
-    // Verplaats vorige Q&A naar geschiedenis
-    if (lastQuestion && lastAnswer) {
-        const qaItem = document.createElement('div');
-        qaItem.style.marginBottom = "1em";
-        qaItem.innerHTML = `
-            <div style="font-weight:bold; color:#b21f24;">Vraag:</div>
-            <div style="margin-bottom:0.5em;">${lastQuestion}</div>
-            <div style="font-weight:bold; color:#005B43;">Antwoord:</div>
-            <div>${lastAnswer}</div>
-            <hr style="margin:1em 0;">
-        `;
-        qaHistory.appendChild(qaItem);
-        qaHistory.style.display = "block";
-    }
+            // Remove selection from both thumbs
+            document.getElementById('thumbsUpBtn').classList.remove('icon-selected');
+            document.getElementById('thumbsDownBtn').classList.remove('icon-selected');
 
-    // Zet chatbox aan en toon zowel vraag als tijdelijk antwoord
-    chatWindow.style.display = 'block';
-    responseDiv.style.display = 'block';
-    responseDiv.innerHTML = `
+            // Verplaats vorige Q&A naar geschiedenis
+            if (lastQuestion && lastAnswer) {
+                const qaItem = document.createElement('div');
+                qaItem.style.marginBottom = "1em";
+                // Add emoji if feedback was given
+                let feedbackEmoji = "";
+                if (prevFeedback === 1) feedbackEmoji = " 👍";
+                else if (prevFeedback === -1) feedbackEmoji = " 👎";
+                qaItem.innerHTML = `
+        <div style="font-weight:bold; color:#b21f24;">Vraag:</div>
+        <div style="margin-bottom:0.5em;">${lastQuestion}</div>
+        <div style="font-weight:bold; color:#005B43;">Antwoord: ${feedbackEmoji}</div>
+        <div>${lastAnswer}</div>
+        <hr style="margin:1em 0;">
+    `;
+                qaHistory.appendChild(qaItem);
+                qaHistory.style.display = "block";
+            }
+            lastFeedback = null;
+            // Zet chatbox aan en toon zowel vraag als tijdelijk antwoord
+            chatWindow.style.display = 'block';
+            responseDiv.style.display = 'block';
+            responseDiv.innerHTML = `
         <div style="font-weight:bold; color:#b21f24;">Vraag:</div>
         <div style="margin-bottom:0.75em;">${question}</div>
         <div style="font-weight:bold; color:#005B43;">Antwoord:</div>
-        <div id="liveAnswer">Kruidje denkt na, een moment geduld aub <b><span id="loadingDots"></span></b></div>
+        <div id="liveAnswer">Kruidje denkt na, een moment geduld aub<b><span id="loadingDots"></span></b></div>
     `;
 
-    answerHeading.style.display = "none"; // niet meer nodig
-    showLoadingDots();
+            answerHeading.style.display = "none"; // niet meer nodig
+            showLoadingDots();
 
-    Object.values(chatIcons).forEach(btn => { if (btn) btn.style.display = "none"; });
+            Object.values(chatIcons).forEach(btn => { if (btn) btn.style.display = "none"; });
 
-    try {
-        const res = await fetch("/ask", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ question })
-        });
-
-        const data = await res.json();
-        const answerText = data.answer || "Er ging iets mis.";
-        const liveAnswerDiv = document.getElementById('liveAnswer');
-
-        animateTextTyping(liveAnswerDiv, answerText);
-
-        lastQuestion = question;
-        lastAnswer = answerText;
-
-        Object.values(chatIcons).forEach(btn => { if (btn) btn.style.display = "inline-block"; });
-
-        if (chatIcons.speakBtnServer) {
-            chatIcons.speakBtnServer.onclick = async function () {
-                await fetch("/speak_dutch", {
+            try {
+                const res = await fetch("/ask", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ text: answerText })
+                    body: JSON.stringify({ question })
                 });
-            };
-        }
 
-    } finally {
-        hideLoadingDots();
-        input.value = "";
-        input.disabled = false;
-        sendBtn.disabled = false;
-        waitingForAnswer = false;
-        input.focus();
-    }
-}
+                const data = await res.json();
+                const answerText = data.answer || "Er ging iets mis.";
+                const liveAnswerDiv = document.getElementById('liveAnswer');
+
+                animateTextTyping(liveAnswerDiv, answerText);
+
+                lastQuestion = question;
+                lastAnswer = answerText;
+
+                // Store chat_id and index for feedback
+                handleAnswer(answerText, data.chat_id, data.index);
+
+                Object.values(chatIcons).forEach(btn => { if (btn) btn.style.display = "inline-block"; });
+
+                if (chatIcons.speakBtnServer) {
+                    chatIcons.speakBtnServer.onclick = async function () {
+                        await fetch("/speak_dutch", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({ text: answerText })
+                        });
+                    };
+                }
+
+            } finally {
+                hideLoadingDots();
+                input.value = "";
+                input.disabled = false;
+                sendBtn.disabled = false;
+                waitingForAnswer = false;
+                document.getElementById('micBtn').disabled = false;
+                input.focus();
+            }
+        }
 
 
 
@@ -4939,6 +5028,117 @@ async function askQuestion() {
 
             addNextChar(i);
         }
+
+
+
+
+        let lastChatId = null;
+        let lastAnswerIndex = null;
+
+        // Call this after receiving an answer from /ask
+        function handleAnswer(answer, chat_id, index) {
+            lastChatId = chat_id;
+            lastAnswerIndex = index;
+            // ...your code to update the UI...
+        }
+
+        // Feedback function
+        function sendFeedback(value) {
+            if (lastChatId === null || lastAnswerIndex === null) {
+                alert("Geen antwoord geselecteerd om feedback op te geven.");
+                return;
+            }
+            lastFeedback = value;
+            fetch("/feedback", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    chat_id: lastChatId,
+                    index: lastAnswerIndex,
+                    value: value
+                })
+            })
+                .then(res => res.json())
+                .then(data => {
+
+                })
+                .catch(() => alert("Feedback geven mislukt."));
+        }
+
+        // Attach to buttons
+        document.getElementById('thumbsUpBtn').onclick = function () {
+            // If already selected, unselect and send neutral feedback
+            if (lastFeedback === 1) {
+                sendFeedback(0);
+                setIconSelected(null);
+            } else {
+                sendFeedback(1);
+                setIconSelected('thumbsUpBtn');
+            }
+        };
+        document.getElementById('thumbsDownBtn').onclick = function () {
+            // If already selected, unselect and send neutral feedback
+            if (lastFeedback === -1) {
+                sendFeedback(0);
+                setIconSelected(null);
+            } else {
+                sendFeedback(-1);
+                setIconSelected('thumbsDownBtn');
+            }
+        };
+
+        function setIconSelected(selectedId) {
+            document.getElementById('thumbsUpBtn').classList.remove('icon-selected');
+            document.getElementById('thumbsDownBtn').classList.remove('icon-selected');
+            if (selectedId) {
+                document.getElementById(selectedId).classList.add('icon-selected');
+            }
+        }
+
+        let recognition;
+        let isRecording = false;
+
+        document.getElementById('micBtn').onclick = function () {
+            if (waitingForAnswer) return;
+            if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+                alert("Deze browser ondersteunt geen spraakherkenning.");
+                return;
+            }
+            if (!recognition) {
+                const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+                recognition = new SpeechRecognition();
+                recognition.lang = 'nl-NL';
+                recognition.interimResults = false;
+                recognition.continuous = false;
+
+                recognition.onresult = function (event) {
+                    const transcript = event.results[0][0].transcript;
+                    document.getElementById('userInput').value = transcript;
+                    isRecording = false;
+                    document.getElementById('micBtn').classList.remove('mic-recording');
+                };
+
+                recognition.onerror = function () {
+                    isRecording = false;
+                    document.getElementById('micBtn').classList.remove('mic-recording');
+                };
+
+                recognition.onend = function () {
+                    isRecording = false;
+                    document.getElementById('micBtn').classList.remove('mic-recording');
+                };
+            }
+
+            if (!isRecording) {
+                recognition.start();
+                isRecording = true;
+                document.getElementById('micBtn').classList.add('mic-recording');
+            } else {
+                recognition.stop();
+                isRecording = false;
+                document.getElementById('micBtn').classList.remove('mic-recording');
+            }
+        };
 
     </script>
 

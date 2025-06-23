@@ -113,20 +113,31 @@
         .label-item.active {
             background-color: #444;
         }
+
+
+        .chat-entry.feedback-good {
+            background-color: #e2feed;
+            /* zacht groen */
+        }
+
+        .chat-entry.feedback-bad {
+            background-color: #f2d5d5;
+            /* zacht rood */
+        }
     </style>
 </head>
 
 <body>
     <div class="header">
         <div class="header-left">
+            <a href="/dashboard">Dashboard</a>
+            <a onclick="showChats()">Chats beheren</a>
             <a href="/data_management">Data beheren</a>
-            <a onclick="showChats()">Chat beheren</a>
         </div>
         <div class="header-right">
             <button onclick="logout()">Uitloggen</button>
         </div>
     </div>
-
     <div class="content">
         <h1 id="welcome-msg">Welkom terug!</h1>
     </div>
@@ -228,11 +239,21 @@
                 chatBlock.innerHTML = `<h3>Chat ID: ${chatId}</h3>`;
 
                 messages.forEach(entry => {
+                    let feedbackIcon = "";
+                    let feedbackClass = "";
+                    if (entry.feedback === 1) {
+                        feedbackIcon = "Goed antwoord 👍";
+                        feedbackClass = "feedback-good";
+                    } else if (entry.feedback === -1) {
+                        feedbackIcon = "Slecht antwoord 👎";
+                        feedbackClass = "feedback-bad";
+                    }
                     chatBlock.innerHTML += `
-                        <div class="chat-entry">
-                            <strong>Gebruiker:</strong> ${entry.user}<br>
-                            <strong>AI:</strong> ${entry.bot}
-                        </div>`;
+        <div class="chat-entry ${feedbackClass}">
+            <strong>Gebruiker:</strong> ${entry.user}<br>
+            <strong>AI:</strong> ${entry.bot}<br>
+            ${feedbackIcon ? `<strong>Feedback: </strong>${feedbackIcon}` : ""}
+        </div>`;
                 });
 
                 chatDiv.appendChild(chatBlock);
