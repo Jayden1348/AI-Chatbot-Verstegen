@@ -4300,9 +4300,23 @@
             /* Grows the icon */
         }
 
+        #thumbsUpBtn.icon-selected {
+            background: #d4f7d4 !important;
+            border: 2px solid #005B43 !important;
+        }
+
+        #thumbsUpBtn.icon-selected .fa-thumbs-up {
+            margin-top: -5px;
+        }
+
+        #thumbsDownBtn.icon-selected {
+            background: #f7d4d4 !important;
+            border: 2px solid #b21f24 !important;
+        }
+
         .icon-selected {
             border-radius: 50% !important;
-            border: 2px solid #bbb !important;
+            /* Remove border color here, handled above */
             transform: scale(1.10);
             transition: background 0.2s, transform 0.2s;
             width: 40px !important;
@@ -4312,18 +4326,6 @@
             align-items: center;
             justify-content: center;
             box-sizing: border-box;
-        }
-
-        /* Thumbs up: light green background when selected */
-        #thumbsUpBtn.icon-selected {
-            background: #d4f7d4 !important;
-            /* light green */
-        }
-
-        /* Thumbs down: light red background when selected */
-        #thumbsDownBtn.icon-selected {
-            background: #f7d4d4 !important;
-            /* light red */
         }
 
         @media only screen and (max-height: 487),

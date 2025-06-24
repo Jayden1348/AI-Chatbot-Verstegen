@@ -1,43 +1,61 @@
 {
-  "effd409f": [
+  "dbfcc710": [
     {
-      "user": "hoe kan ik vakantie aanvragen?",
-      "bot": "Om vakantie aan te vragen, dienst u een schriftelijk verzoek bij de werkgever in te dienen. Bij dit verzoek aangeeft u wanneer en hoeveel vakantiedagen u wenst op te nemen. Zorg ervoor dat het verzoek voldoet aan alle vereiste documentatie en regels voor vakantieaanvraag, zoals die bepaald zijn in de Collectieve Arbeidsovereenkomst (CAO) van Verstegen en andere relevantie wet- en regelgeving.",
-      "feedback": 1
-    },
-    {
-      "user": "hoeveel vakantiedagen heb ik per jaar?",
-      "bot": "Per 1 april 2024 bouwt de medewerker bij een volledige werkweek 26 vakantiedag per jaar op.",
+      "user": "Hoeveel pensioen krijg ik?",
+      "bot": "Het is moeilijk om een bepaald bedrag te noemen, omdat de pensioenopbouw afhangt van verscheidene factoren zoals je salaris, de leeftijd waarin je begint met het bijwonen van het pensioen en de lengte van je werkloopbaan. Als je meer informatie over deze factoren hebt, kan ik je helpen om een geschat bedrag te krijgen.",
       "feedback": 0
     },
     {
-      "user": "hoe kan ik vakantiedagen aanvragen?",
-      "bot": "Om vakantiedagen aan te vragen, dienst u een schriftelijk verzoek bij de werkgever in te dienen. In dit verzoek aangeeft u wanneer en hoeveel vakantiedagen u wenst op te nemen. De wettelijke bepalingen omtrent vakantie worden opgevolgd, zodat uw vraag afhankelijk is van de specifieke regels binnen Verstegen.",
+      "user": "Hoeveel vakantiedagen krijg ik?",
+      "bot": "Je krijgt per volledige werkweek 26 vakantiedagen per jaar op. Bij een medewerker die vakantiedagen wil opnemen, moet hij een schriftelijk verzoek indienen bij de werkgever.",
+      "feedback": 1
+    }
+  ],
+  "er3d1spv": [
+    {
+      "user": "Wat moet ik doen bij een ongeval?",
+      "bot": "Bij een ongeval moeten de volgende stappen worden uitgevoerd:\n\n1. Alarmschakel: Zorg dat iedereen op de hoogte is van het ongeval door het alarmsysteem in te schakelen.\n2. Beoordeling van de situatie: Beoordeel het ernstige van de situatie en zorg voor directe eerste hulp indien nodig.\n3. Informatie verzamelen: Verzamel zo veel mogelijk informatie over het ongeval, zoals plaats, tijdstip, gebeurtenissen en betrokkenen.\n4. Veiligheid: Zorg voor de veiligheid van alle betrokkenen en vervang bij noodzakelijkheid beschadigde materialen of apparatuur.\n5. Documentatie: Maak een documentatie van het ongeval, inclusief informatie over de gebeurtenissen, maatregelen genomen enlessen geleerd.\n6. Melding: Rapporteer het ongeval aan de vereiste autoriteiten of interne manager, volgens de bedrijfsvoorschriften.\n7. Investigatie: Zorg voor een geïntegreerde investigatie van het ongeval door relevant experts en neem nodige maatregelen om dergelijke ongevallen in de toekomst te voorkomen.\n8. Leren van het ongeval: Leer uit het ongeval en implementeer veranderingen in de veiligheidsbeleid en -praktijken, indien nodig.",
       "feedback": -1
     }
   ],
   "9da4cb0d": [
     {
-      "user": "hoe kan ik mij ziekmelden?",
-      "bot": "U kunt zich ziekmelden door een medische verklaring in te dienen bij uw werkgever. Zorg ervoor dat u de vereiste documenten en informatie meegeeft, zoals de reden voor uw ziekte, de verwachte duur van het verlof en eventuele medische bewijs. Controleer de CAO of bepaalde richtlijnen van uw werkgever voor specifieke proceduren en eisen ten aanzien van ziekmeldingen.",
+      "user": "Hoe kan ik me ziek melden?",
+      "bot": "Als je ziek bent, melk dan zodra mogelijk aan je werkgever of persoon die verantwoordelijk is voor uw werkteam. Informeer hen over je gezondheidstoestand en eventuele doktersadvies. Je kunt dit doen via telefoon of digitale communicatietool, zoals een email. Zorg ervoor dat je eventueel vereiste medische bewijs of doktersverklaring meegeeft indien nodig. Let op de specifieke procedures en regels van je werkgever in dit geval.",
+      "feedback": 1
+    },
+    {
+      "user": "Wat als ik meerdere weken ziek ben?",
+      "bot": "Als je meerdere weken ziek bent, dien je contact op te nemen met uw werkgever of personeelsbeheerder. Ze kunnen samen overeenstemming vinden over de verlofdagen die je mag nemen en het effect op je arbeidscontract. Het is belangrijk om als spoedig mogelijk contact op te nemen, zodat een oplossing wordt gevonden die goed aansluit bij beide partijen en de gezondheidsstatus van jezelf.",
       "feedback": 0
     }
   ],
   "e1cc6b15": [
     {
-      "user": "Hoeveel vakantiedagen krijg ik?",
-      "bot": "Je krijgt per jaar 26 vakantiedagen.",
-      "feedback": 1
-    },
-    {
-      "user": "Hoeveel pensioen krijg ik",
-      "bot": "Het aantal pensioen-dagen dat je kunt krijgen, hangt af van verschillende factoren zoals uw dienstbaarheid, uw leeftijd en de contractuele voorwaarden. Om een specifiek antwoord te kunnen geven over het aantal pensioen-dagen dat u zou kunnen ontvangen, is meer informatie nodig over uw persoonlijke situatie en contractuele voorwaarden.",
+      "user": "Ik wil me verder ontwikkelen, kan ik een cursus volgen?",
+      "bot": "Ja, je kunt een cursus volgen om je verdere te ontwikkelen. Het is raadzaam om te overleggen met uw werkgever en te kijken naar de beschikbare cursussen die aan de vereiste opleidingen en cursussen voldoende zijn.",
       "feedback": 0
-    },
+    }
+  ],
+  "effd409f": [
     {
-      "user": "Wat moet ik doen bij een ongeval",
-      "bot": "Bij een ongeval moet u de volgende stappen ondernemen:\n\n1. Informeer direct uw werkgever over het ongeval en volg hun instructies.\n2. Zorg voor jezelf en anderen aanwezig bij het ongeval, en verwerking van de gebeurtenis beperkt tot noodzakelijke hulpverlening.\n3. Volgens de bedrijfsvoorschriften, documenteer de gebeurtenis en verzamel relevante informatie over het ongeval.\n4. Naar aanleiding van het ongeval mogelijk onderzoek door een werkspecialist of externe instantie, volgens de bedrijfsvoorschriften.\n5. Als gevolg van het ongeval, zo nodig, gezondheidscontrole en medische verzorging aanschaffen.\n6. Vermeld het ongeval indien nodig aan de overheid (zoals Arbo), volgens de bedrijfsvoorschriften.",
+      "user": "Ik ben vergeten uit te klokken, wat moet ik doen?",
+      "bot": "Als u vergeten bent uit te klokken, is het belangrijk om dit zo snel mogelijk aan de werkgever of tijdplanner te melden. Zodra u dit hebt gedaan, zullen ze met u over de aankomende uren praten en eventuele aanpassingen doorvoeren. Het is belangrijk om dit zo snel mogelijk te doen, om onduidelijkheden of verwarring te voorkomen.",
+      "feedback": 0
+    }
+  ],
+  "b7k2x9qf": [
+    {
+      "user": "Zegt de cao wat over welke kruiden geproduceerd worden?",
+      "bot": "De CAO van Verstegen beantwoordt niet op vragen over welke kruiden geproduceerd worden. Deze informatie is niet aanwezig in de gegeven context en zou moeten worden opgezocht in interne documenten of communicatie met het bedrijf.",
       "feedback": -1
+    }
+  ],
+  "z8r1q2w3": [
+    {
+      "user": "Mag ik laat komen?",
+      "bot": "Nee, je mag niet te laat komen. Bij regelmatig te laat komen ontvangt de medewerker een schriftelijke waarschuwing.",
+      "feedback": 0
     }
   ]
 }
