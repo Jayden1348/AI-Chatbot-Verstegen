@@ -4300,23 +4300,9 @@
             /* Grows the icon */
         }
 
-        #thumbsUpBtn.icon-selected {
-            background: #d4f7d4 !important;
-            border: 2px solid #005B43 !important;
-        }
-
-        #thumbsUpBtn.icon-selected .fa-thumbs-up {
-            margin-top: -5px;
-        }
-
-        #thumbsDownBtn.icon-selected {
-            background: #f7d4d4 !important;
-            border: 2px solid #b21f24 !important;
-        }
-
         .icon-selected {
             border-radius: 50% !important;
-            /* Remove border color here, handled above */
+            border: 2px solid #bbb !important;
             transform: scale(1.10);
             transition: background 0.2s, transform 0.2s;
             width: 40px !important;
@@ -4326,6 +4312,18 @@
             align-items: center;
             justify-content: center;
             box-sizing: border-box;
+        }
+
+        /* Thumbs up: light green background when selected */
+        #thumbsUpBtn.icon-selected {
+            background: #d4f7d4 !important;
+            /* light green */
+        }
+
+        /* Thumbs down: light red background when selected */
+        #thumbsDownBtn.icon-selected {
+            background: #f7d4d4 !important;
+            /* light red */
         }
 
         @media only screen and (max-height: 487),
@@ -4388,8 +4386,8 @@
 
     <div class="notif-top-header" style="background-color:#006947;margin-inline:auto;padding:16px;display:none;">
         <div class="container">
-            <p style="color:#fff;margin:0;text-align:center">De website is momenteel nog in onderhoud, onze excuses voor
-                het ongemak</p>
+            <p style="color:#fff;margin:0;text-align:center">The website is currently under maintenance, our apologies
+                for the inconvenience.</p>
         </div>
     </div>
 
@@ -4412,17 +4410,17 @@
                                         href="https://shop.verstegen.nl/">Webshop</a></li>
                                 <li id="menu-item-7430"
                                     class="menu-item menu-item-type-custom menu-item-object-custom menu-item-7430"><a
-                                        href="https://algemeen.verstegen.nl/ons-verhaal/duurzaamheid/">Duurzaamheid</a>
+                                        href="https://algemeen.verstegen.nl/ons-verhaal/duurzaamheid/">Sustainability</a>
                                 </li>
                                 <li id="menu-item-9513"
                                     class="menu-item menu-item-type-custom menu-item-object-custom menu-item-9513"><a
-                                        href="https://algemeen.verstegen.nl/over-ons/">Over Ons</a></li>
+                                        href="https://algemeen.verstegen.nl/over-ons/">About us</a></li>
                                 <li id="menu-item-7433"
                                     class="menu-item menu-item-type-custom menu-item-object-custom menu-item-7433"><a
-                                        href="https://verstegen.nl/uitgelicht/">Uitgelicht</a></li>
+                                        href="https://verstegen.nl/uitgelicht/">Featured</a></li>
                                 <li id="menu-item-7434"
                                     class="menu-item menu-item-type-custom menu-item-object-custom menu-item-7434"><a
-                                        href="https://verstegen.nl/recepten/">Recepten</a></li>
+                                        href="https://verstegen.nl/recepten/">Recipes</a></li>
                             </ul>
                         </div>
 
@@ -4476,10 +4474,10 @@
 
                     <div class="col">
                         <div class="wrapper-btn">
-                            <a href="https://verstegen.nl/" class="btn-style-1 active"> Consument</a>
+                            <a href="https://verstegen.nl/" class="btn-style-1 active"> Consumer</a>
                             <a href="https://professioneel.verstegen.nl/" class="btn-style-1 "> Professional</a>
                             <!-- <a href="https://industrie.verstegen.nl/" class="btn-style-1 "> Industrie</a> -->
-                            <a href="/login" class="btn-style-1">Inloggen</a>
+                            <a href="/login" class="btn-style-1">Login</a>
                         </div>
                     </div>
                 </div>
@@ -4491,8 +4489,8 @@
     <div class="section-content-hero"
         style="--bg: url('./static/cover.webp'); background-image: var(--bg); background-size: cover; background-position: center;">
         <div class="container">
-            <h1 class="section-content-hero-title">Heb je vragen?</h1>
-            <h2 class="section-content-hero-short-desc">Kruidje helpt je graag verder</h2>
+            <h1 class="section-content-hero-title">Do you have questions?</h1>
+            <h2 class="section-content-hero-short-desc">Spicey is happy to help you</h2>
         </div>
     </div>
 
@@ -4501,19 +4499,19 @@
     <div class="section-content-accordion bg-green">
         <div class="container">
             <div class="content content-wrapper main-content">
-                <h2 class="main-content__title">Veelgestelde vragen</h2>
+                <h2 class="main-content__title">Frequently Asked Questions</h2>
                 <div class="main-content__text">
-                    <p>Hier vind je antwoord op veelgestelde vragen. Staat jouw vraag er niet tussen en geeft Kruidje
-                        geen duidelijk antwoord?<br> Neem dan contact op via het contactformulier hieronder, we
-                        zullen je zo snel mogelijk helpen.</p>
+                    <p>Here you will find answers to frequently asked questions. Is your question not listed or does
+                        Spicey not provide a clear answer?<br> Then contact us using the contact form below and we will
+                        help you as soon as possible.</p>
                 </div>
 
 
                 <div class="accordion" id="contactpage">
 
                     <div class="accordion-item">
-                        <button class="accordion-button" data-parent="contactpage">Hoeveel vakantiedagen krijg ik per
-                            jaar?
+                        <button class="accordion-button" data-parent="contactpage">How many vacation days do I get per
+                            year?
                             <!-- svg-plus -->
                             <svg class="plus-icon" xmlns="http://www.w3.org/2000/svg" height="1em"
                                 viewBox="0 0 512 512">
@@ -4533,13 +4531,13 @@
 
                         </button>
                         <div class="accordion-content hide">
-                            <p>Bij een fulltime dienstverband heb je recht op 26 vakantiedagen per jaar. Daarnaast kun
-                                je extra verlofdagen krijgen op basis van je leeftijd of dienstjaren. Vanaf 60 jaar
-                                ontvang je bij ploegendienst 13 hersteldagen in plaats van extra verlofdagen.</p>
+                            <p>With a full-time contract, you are entitled to 26 vacation days per year. In addition,
+                                you may receive extra leave days based on your age or years of service. From the age of
+                                60, if you work in shifts, you receive 13 recovery days instead of extra leave days.</p>
                         </div>
                     </div>
                     <div class="accordion-item">
-                        <button class="accordion-button" data-parent="contactpage">Krijg ik toeslag als ik overwerk?
+                        <button class="accordion-button" data-parent="contactpage">Do I get a bonus for overtime?
                             <!-- svg-plus -->
                             <svg class="plus-icon" xmlns="http://www.w3.org/2000/svg" height="1em"
                                 viewBox="0 0 512 512">
@@ -4559,13 +4557,13 @@
 
                         </button>
                         <div class="accordion-content hide">
-                            Ja, overwerk wordt vergoed met toeslagen variërend van 24,5% tot 125%, afhankelijk van het
-                            moment waarop je werkt. Je kunt kiezen voor uitbetaling in geld of compensatie in tijd
-                            (tijd-voor-tijd), met een maximum van 112,5 uur aan opgebouwde tijd-voor-tijd.
+                            Yes, overtime is compensated with surcharges ranging from 24.5% to 125%, depending on when
+                            you work. You can choose to receive payment in money or compensation in time
+                            (time-for-time), with a maximum of 112.5 hours of accrued time-for-time.
                         </div>
                     </div>
                     <div class="accordion-item">
-                        <button class="accordion-button" data-parent="contactpage">Wanneer krijg ik mijn salaris?
+                        <button class="accordion-button" data-parent="contactpage">When do I receive my salary?
                             <!-- svg-plus -->
                             <svg class="plus-icon" xmlns="http://www.w3.org/2000/svg" height="1em"
                                 viewBox="0 0 512 512">
@@ -4585,13 +4583,13 @@
 
                         </button>
                         <div class="accordion-content hide">
-                            Je ontvangt je salaris maandelijks aan het eind van de maand via een bankoverschrijving. Je
-                            loonstrook is digitaal beschikbaar via het werknemersportaal. Jaarlijks krijg je ook een
-                            jaaropgave voor de belasting.
+                            You receive your salary monthly at the end of the month via a bank transfer. Your payslip is
+                            digitally available through the employee portal. Each year you also receive an annual
+                            statement for tax purposes.
                         </div>
                     </div>
                     <div class="accordion-item">
-                        <button class="accordion-button" data-parent="contactpage">Heb ik recht op reiskostenvergoeding?
+                        <button class="accordion-button" data-parent="contactpage">Am I entitled to travel allowance?
                             <!-- svg-plus -->
                             <svg class="plus-icon" xmlns="http://www.w3.org/2000/svg" height="1em"
                                 viewBox="0 0 512 512">
@@ -4611,13 +4609,13 @@
 
                         </button>
                         <div class="accordion-content hide">
-                            Ja, je ontvangt €0,23 per kilometer voor woon-werkverkeer tot een maximum van 30 km enkele
-                            reis, alleen op dagen dat je daadwerkelijk naar het werk reist. Daarnaast krijg je €2,35 per
-                            dag als thuiswerkvergoeding (in 2024), mits je thuiswerkt volgens de afspraken.
+                            Yes, you receive €0.23 per kilometer for commuting up to a maximum of 30 km one way, only on
+                            days you actually travel to work. In addition, you receive €2.35 per day as a work-from-home
+                            allowance (in 2024), provided you work from home according to the agreements.
                         </div>
                     </div>
                     <div class="accordion-item">
-                        <button class="accordion-button" data-parent="contactpage">Hoe werkt het ouderschapsverlof?
+                        <button class="accordion-button" data-parent="contactpage">Do I have parental leave?
                             <!-- svg-plus -->
                             <svg class="plus-icon" xmlns="http://www.w3.org/2000/svg" height="1em"
                                 viewBox="0 0 512 512">
@@ -4637,13 +4635,13 @@
 
                         </button>
                         <div class="accordion-content hide">
-                            Je kunt onbetaald ouderschapsverlof opnemen tot het kind 8 jaar is, mits je minimaal 1 jaar
-                            in dienst bent. Het aantal verlofuren is maximaal 26 keer je wekelijkse arbeidsduur en je
-                            dient het verlof minimaal twee maanden van tevoren schriftelijk aan te vragen.
+                            You can take unpaid parental leave until your child turns 8, provided you have been employed
+                            for at least 1 year. The maximum number of leave hours is 26 times your weekly working
+                            hours, and you must request the leave in writing at least two months in advance.
                         </div>
                     </div>
                     <div class="accordion-item">
-                        <button class="accordion-button" data-parent="contactpage">Wat gebeurt er als ik ziek word?
+                        <button class="accordion-button" data-parent="contactpage">What if I get sick?
                             <!-- svg-plus -->
                             <svg class="plus-icon" xmlns="http://www.w3.org/2000/svg" height="1em"
                                 viewBox="0 0 512 512">
@@ -4663,13 +4661,14 @@
 
                         </button>
                         <div class="accordion-content hide">
-                            In het eerste ziektejaar krijg je tot 100% van je salaris doorbetaald. In het tweede jaar is
-                            dit 70%, maar bij actieve medewerking aan re-integratie wordt dit weer aangevuld tot 100%.
-                            Ploegentoeslagen worden gedeeltelijk doorbetaald gedurende het eerste ziektejaar.
+                            In the first year of illness, you will continue to receive up to 100% of your salary. In the
+                            second year, this is 70%, but if you actively cooperate with reintegration, it will be
+                            supplemented back to 100%. Shift allowances are partially paid during the first year of
+                            illness.
                         </div>
                     </div>
                     <div class="accordion-item">
-                        <button class="accordion-button" data-parent="contactpage">Wat zijn de werktijden?
+                        <button class="accordion-button" data-parent="contactpage">What are the working hours?
                             <!-- svg-plus -->
                             <svg class="plus-icon" xmlns="http://www.w3.org/2000/svg" height="1em"
                                 viewBox="0 0 512 512">
@@ -4689,14 +4688,13 @@
 
                         </button>
                         <div class="accordion-content hide">
-                            De standaard werkweek bedraagt 37,5 uur. De werktijden worden in overleg met je
-                            leidinggevende vastgesteld, met als uitgangspunt de bedrijfstijden van 06.00 tot 06.00 uur.
-                            Roosters worden vier weken vooraf en werktijden twee weken vooraf bekendgemaakt.
+                            The standard workweek is 37.5 hours. Working hours are determined in consultation with your
+                            supervisor, based on company operating hours from 06:00 to 06:00. Schedules are announced
+                            four weeks in advance and working hours two weeks in advance.
                         </div>
                     </div>
                     <div class="accordion-item">
-                        <button class="accordion-button" data-parent="contactpage">Heb ik recht op een
-                            eindejaarsuitkering?
+                        <button class="accordion-button" data-parent="contactpage">Am I entitled to a year-end bonus?
                             <!-- svg-plus -->
                             <svg class="plus-icon" xmlns="http://www.w3.org/2000/svg" height="1em"
                                 viewBox="0 0 512 512">
@@ -4716,9 +4714,9 @@
 
                         </button>
                         <div class="accordion-content hide">
-                            Ja, vanaf december 2024 ontvang je jaarlijks een bruto eindejaarsuitkering van €750 bij een
-                            fulltime dienstverband, naar rato van je diensttijd tussen 1 december en 30 november. Je
-                            moet op 30 november nog in dienst zijn om recht te hebben op deze uitkering.
+                            Yes, starting from December 2024, you will receive an annual gross year-end bonus of €750
+                            for a full-time position, pro rata based on your employment between December 1 and November
+                            30. You must still be employed on November 30 to be eligible for this bonus.
                         </div>
                     </div>
 
@@ -4727,12 +4725,11 @@
             </div>
         </div>
     </div>
-
     <div class="section-content-block-fullwidth bg-dark-white">
         <div class="container" style="margin-bottom: 3em;">
             <div class="wrapper-content">
-                <h1 class="section-content-hero-title" style="text-align:center">Stel je vraag aan onze AI chatbot
-                    Kruidje</h1>
+                <h1 class="section-content-hero-title" style="text-align:center">Ask your question to our AI chatbot
+                    Spicey</h1>
                 <h3 class="section-content-block-fullwidth-subtitle text-center"></h3>
                 <div id="qaHistory"
                     style="display:none;margin: 2em 0; max-height: 240px; overflow-y: auto; border-radius: 10px; border: 1px solid #d7d7d7; background: #eceaea; box-shadow: 0 2px 6px rgba(0,0,0,0.05); padding: 1em;">
@@ -4740,10 +4737,10 @@
             </div>
             <div class="container">
                 <h2>
-                    <div class="prompt">Waar kan ik je mee helpen?</div>
+                    <div class="prompt">How can I help you?</div>
                 </h2>
                 <div style="display: flex; gap: 1em; align-items: center; margin-bottom: 1.5em;">
-                    <input type="text" id="userInput" class="input-line" placeholder="Typ hier je vraag..." style="
+                    <input type="text" id="userInput" class="input-line" placeholder="Type your question here..." style="
             width: 100%;
             height: 1.5em;
             font-size: 1.1em;
@@ -4767,7 +4764,7 @@
     transition: border 0.2s ease, box-shadow 0.2s ease;
     margin-left: 0.1em;
     margin-right: 0.1em;
-    " title="Spreek je vraag in">
+    " title="Speak your question">
                         <i class="fa-solid fa-microphone" style="font-size:1.5em;"></i>
                     </button>
 
@@ -4785,7 +4782,7 @@
             margin-bottom: 1.5em;
             transition: background-color 0.3s ease, transform 0.2s ease;
             ">
-                        Stuur
+                        Send
                     </button>
                 </div>
                 <div id="lastQuestionContainer" style="
@@ -4797,7 +4794,7 @@
 "></div>
                 <!-- <h3 style="margin-top: 2em; font-weight: bold; color: #b21f24;">Antwoord:</h3> -->
                 <h3 id="answerHeading" style="display: none; margin-top: 0; font-weight: bold; color: #b21f24;">
-                    Antwoord:
+                    Answer:
                 </h3>
 
                 <div id="chatWindow" style="
@@ -4828,16 +4825,16 @@
                         <div style="display: flex; flex-direction: column; margin-left: 0.5em;margin-top: 0.33em;">
                             <button id="speakBtnServer"
                                 style="margin-bottom:0.5em; background:none; border:none; cursor:pointer; display:none;"
-                                title="Laat het antwoord uitspreken">
+                                title="Hear the answer">
                                 <i class="fa-solid fa-volume-high" style="font-size:1.5em; color:#000000;"></i>
                             </button>
                             <button id="thumbsUpBtn"
                                 style="margin-bottom:0.5em; background:none; border:none; cursor:pointer;"
-                                title="Goed antwoord">
+                                title="Good answer">
                                 <i class="fa-solid fa-thumbs-up" style="font-size:1.5em; color:#005B43;"></i>
                             </button>
                             <button id="thumbsDownBtn" style="background:none; border:none; cursor:pointer;"
-                                title="Slecht antwoord">
+                                title="Bad answer">
                                 <i class="fa-solid fa-thumbs-down" style="font-size:1.5em; color:#b21f24;"></i>
                             </button>
                         </div>
@@ -4897,9 +4894,9 @@
                 if (prevFeedback === 1) feedbackEmoji = " 👍";
                 else if (prevFeedback === -1) feedbackEmoji = " 👎";
                 qaItem.innerHTML = `
-        <div style="font-weight:bold; color:#b21f24;">Vraag:</div>
+        <div style="font-weight:bold; color:#b21f24;">Question:</div>
         <div style="margin-bottom:0.5em;">${lastQuestion}</div>
-        <div style="font-weight:bold; color:#005B43;">Antwoord: ${feedbackEmoji}</div>
+        <div style="font-weight:bold; color:#005B43;">Answer: ${feedbackEmoji}</div>
         <div>${lastAnswer}</div>
         <hr style="margin:1em 0;">
     `;
@@ -4911,10 +4908,10 @@
             chatWindow.style.display = 'block';
             responseDiv.style.display = 'block';
             responseDiv.innerHTML = `
-        <div style="font-weight:bold; color:#b21f24;">Vraag:</div>
+        <div style="font-weight:bold; color:#b21f24;">Question:</div>
         <div style="margin-bottom:0.75em;">${question}</div>
-        <div style="font-weight:bold; color:#005B43;">Antwoord:</div>
-        <div id="liveAnswer">Kruidje denkt na, een moment geduld aub<b><span id="loadingDots"></span></b></div>
+        <div style="font-weight:bold; color:#005B43;">Answer:</div>
+        <div id="liveAnswer">Spicey is thinking, please wait a moment<b><span id="loadingDots"></span></b></div>
     `;
 
             answerHeading.style.display = "none"; // niet meer nodig
@@ -4930,7 +4927,7 @@
                 });
 
                 const data = await res.json();
-                const answerText = data.answer || "Er ging iets mis.";
+                const answerText = data.answer_en || data.answer || "Something went wrong.";
                 const liveAnswerDiv = document.getElementById('liveAnswer');
 
                 animateTextTyping(liveAnswerDiv, answerText);
@@ -5063,7 +5060,7 @@
                 .then(data => {
 
                 })
-                .catch(() => alert("Feedback geven mislukt."));
+                .catch(() => alert("Failed to send feedback."));
         }
 
         // Attach to buttons
@@ -5102,7 +5099,7 @@
         document.getElementById('micBtn').onclick = function () {
             if (waitingForAnswer) return;
             if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
-                alert("Deze browser ondersteunt geen spraakherkenning.");
+                alert("This browser does not support speech recognition.");
                 return;
             }
             if (!recognition) {
@@ -5145,7 +5142,6 @@
 
 
 
-
     <!-- section contact form -->
     <div class="section-content-contact">
         <div class="container">
@@ -5171,50 +5167,48 @@
                                 <input type="hidden" name="_wpcf7_recaptcha_response"
                                     value="03AFcWeA4Ahae8jqVk-LyBrC1WZMkbrfWxpDYx18hFgAae6ChJ_7yczYO7o_jDA5Y71nkdGa1MoRhq6YccboJ8YcRWNEGl6m27e6jGO2axikpBJbrSN-eXVICRICgfUv8-gf1qTBDQxEh6fkSeywumgEDjp97TkEWQlEymfd5AoFwDsoiAkhBaLOMwR6ugDzVSSccMmVqIca0wwdc-F7NbeAPuUjwArsoQiAzReEzMa3vP04R-30OY8xTlKminQLaXb60CoTyRVUIXy7MiWDFIeXgZKnlFo54fam_hybqOpZl8JOUq78cLigB7g2QXNWMD4U3AQ-zJSRcTg0ZlQTkSBk_ZVgQ2FA27ajWPyJho0s61CknQ1aSO6tyrcnUTM03ijyLVDqmnjWGCYtHm0sblrskTRCj-F7uYFg0fZyRllBjU55W4RsBgG3EXe7sSHuClyMXpqRWDSX7RdLQSZAKXlgd5fRNcURHFC43exVx2Bx6hpM51ETg-ueuXJgu5s0xsjCzNa9AzZxZC8i5M2_QegyopVA0FYCrsGUUBF-hrpfa2a_d23N_4UZNegRGJet1hDBTBe79_hSQjNsy3oT4hdfHWUJSJWKVmzT0uIQDhXRm7q1e3W3KZpKcVH-sx8_xBf3XcHGhqJflB3zppQHpfGQlKCM3Sh0mygKHplkC0JWxmHJ2ksU6HR8BTJQvGU1r_DXPhNQ2B27Z2B2QLPdW-1GHyHjOSnQC8-C4NQ99eYHElkWM4EdHMrjBuUc2BrO9Ylzfb7ODpMgauRicGusPqOUDOsOREcmGGewy_lDuFml54XQF-AdNf1cjcDoqDWsPvRFbUdgfXTaQX2S8Ibf0cQjxwwTalyG5PYn30jYNADe9TZVZ56dOwabCYn6Jw3eDOQhI_GBG5mZW4xgZNRwrEcxQOO1wPslWpPBPcJKD4623gXvvlX2mIg2B9V8HfVV4XVC3EdaQCg74sKsANmKLm-3aLyiKfdiLCu6fiEWUVgCp4RZ1spOWtPWOKDJ3GfnSznhbSrHfu8s6Wqr4AfqgF9Fevoou0NisX-mcnmxG0Q_OE6mIF4zYHwUaul3tuCT2MfScyOzpqyOZeaKWM6YAuuhOmgj0dCB20TI6JUj_7tAHK-5BFtR9ZCLARgiKVRv8ptrqFyga4gZ9EhQhhynSTLBXTjQPvLFXoBHAuDb4l_pJGQyWR-Kw47BV_0faNq4iE7nMd8yeXoyh2dPQZlpKI49DSAMJ6uU_X536LvdEEb5dDq6dr682DV1xif5KjJ8nsSfPmIFavX-0APd_XyesoQHMSl1TvmAOxZFTvwaNnlNwkQRNSM5sW5M61kG6eIFIEJ_1BGAs4o2wZa2eTITHmnOvUCazrYVtItYXDrbYNYkVGHmw5yQlPniyJF14z9EnlajYztQl9AJ_rFJ5QMdsWEvt6Xf9qxeyytWgeLSvhVe6pQzna-ozoVJS3l4cKP5qm-k0zz-N83qka3G7UtzQ5e2s5tpfVPGhZDfA_sRnTQMTCXIFzC7qvsLPW3mYvC_PQ0TiZqxKO3nHvPbQUDrDWSr482AakRL8R6wspChkQA-7mZlGuX-Fulcr8VRoIHGvA-VpdeXysVyn0c7yCnJc63xwBv7fGgM65s7hzRj_CzydZDMCSUIK9Yzw52OzE-gTb0BMJ4K6k6Nx4yqPmxax4mTMVCGCerNB8AwPs3_Ljpxk79I-jvwmT7-qPx6RvdoG9F5GCCi3xbaOO7RWDUEeSydhgfb1znnMxhXKscvAOZqcLmzBhk8PwO_CWLYLcEcj75pFgxReYkDQ14IenDhRYrbu8SoHxciO1Xq7DTSxZUK4n8ikmL5pX633yMrMs80V9ZNG8sM47X5lDs3utP08gzS3_SNbY51nLjgvw2e1jJoAuaU5jAXAa1SdbvbpaeWSyPX_MYt7KSWiC2u8QMGGxhjcodWs4lBHglzoG9X996dcaJDmOgOC1-IoAkBfyGaOb8VIYdtJYNzWTiIx1Yfi-FiZtqsxrrrraaYKB12pfWDvH5pF4yelZnWtlqIZXYm779mPhw80T132l">
                             </div>
-                            <p><label> Naam: *<br>
+                            <p><label> Name: *<br>
                                     <span class="wpcf7-form-control-wrap" data-name="your-name"><input size="40"
                                             maxlength="400"
                                             class="wpcf7-form-control wpcf7-text wpcf7-validates-as-required"
-                                            aria-required="true" aria-invalid="false"
-                                            placeholder="Voornaam en achternaam" value="" type="text"
-                                            name="your-name"></span> </label>
+                                            aria-required="true" aria-invalid="false" placeholder="First and Last name"
+                                            value="" type="text" name="your-name"></span> </label>
                             </p>
-                            <p><label> E-mailadres: *<br>
+                            <p><label> E-mailadress: *<br>
                                     <span class="wpcf7-form-control-wrap" data-name="your-email"><input size="40"
                                             maxlength="400"
                                             class="wpcf7-form-control wpcf7-email wpcf7-validates-as-required wpcf7-text wpcf7-validates-as-email"
                                             aria-required="true" aria-invalid="false"
-                                            placeholder="voorbeeld@verstegen.nl" value="" type="email"
+                                            placeholder="example@verstegen.co.uk" value="" type="email"
                                             name="your-email"></span> </label>
                             </p>
-                            <p><label> Telefoonnummer: *<br>
+                            <p><label> Phone Number: *<br>
                                     <span class="wpcf7-form-control-wrap" data-name="phoneNumber"><input size="40"
                                             maxlength="400"
                                             class="wpcf7-form-control wpcf7-tel wpcf7-text wpcf7-validates-as-tel"
                                             aria-invalid="false" placeholder="0612345678" value="" type="tel"
                                             name="phoneNumber"></span> </label>
                             </p>
-                            <p><label> Onderwerp: *<br>
+                            <p><label> Subject: *<br>
                                     <span class="wpcf7-form-control-wrap" data-name="onderwerp"><input size="40"
                                             maxlength="400"
                                             class="wpcf7-form-control wpcf7-text wpcf7-validates-as-required"
-                                            aria-required="true" aria-invalid="false" placeholder="Onderwerp" value=""
+                                            aria-required="true" aria-invalid="false" placeholder="Subject" value=""
                                             type="text" name="onderwerp"></span> </label>
                             </p>
-                            <p><label> Vraag: *<br>
+                            <p><label> Question: *<br>
                                     <span class="wpcf7-form-control-wrap" data-name="your-message"><textarea cols="40"
                                             rows="10" maxlength="2000" class="wpcf7-form-control wpcf7-textarea"
-                                            aria-invalid="false" placeholder="Typ hier jouw vraag"
+                                            aria-invalid="false" placeholder="Type your question here"
                                             name="your-message"></textarea></span> </label>
                             </p>
                             <p><span class="wpcf7-form-control-wrap" data-name="acceptance-912"><span
                                         class="wpcf7-form-control wpcf7-acceptance"><span
                                             class="wpcf7-list-item"><label><input type="checkbox" name="acceptance-912"
-                                                    value="1" aria-invalid="false"><span
-                                                    class="wpcf7-list-item-label">Ik ga akkoord met de <a
-                                                        class="privacy-permalink"
+                                                    value="1" aria-invalid="false"><span class="wpcf7-list-item-label">I
+                                                    agree with the <a class="privacy-permalink"
                                                         href="https://algemeen.verstegen.nl/wp-content/uploads/sites/10/2023/12/Privacyverklaring-Verstegen-Spices-Sauces-2019.pdf">privacy
-                                                        wetgeving van Verstegen Spices &amp; Sauces</a>
+                                                        policy of Verstegen Spices &amp; Sauces</a>
                                                     *</span></label></span></span></span>
                             </p>
                             <p><input
@@ -5232,7 +5226,7 @@
 
                     <div class="accordion side-faq" id="contactpage">
                         <div class="accordion-item">
-                            <button class="accordion-button" data-parent="contactpage">Verstegen Consumenten Service
+                            <button class="accordion-button" data-parent="contactpage">Verstegen Consumer Service
                                 <!-- svg-plus -->
                                 <svg class="plus-icon" xmlns="http://www.w3.org/2000/svg" height="1em"
                                     viewBox="0 0 512 512">
@@ -5251,10 +5245,10 @@
                             </button>
                             <div class="accordion-content accordion-content-sidebar hide">
                                 <div class="tab-faq-content tab-contact-content">
-                                    <p><span style="text-decoration: underline">Openingstijden:</span><br>
-                                        <em>Maandag t/m vrijdag: 9:00 uur – 17:00 uur</em>
+                                    <p><span style="text-decoration: underline">Opening times:</span><br>
+                                        <em>Monday to Friday: 9:00 AM – 5:00 PM</em>
                                     </p>
-                                    <p>Antwoordnummer 40157<br>
+                                    <p>Answer Number 40157<br>
                                         3040 VB Rotterdam<br>
                                         Nederland</p>
                                     <p>BTW: NL003199538B01<br>
@@ -5274,7 +5268,7 @@
                             </div>
                         </div>
                         <div class="accordion-item">
-                            <button class="accordion-button" data-parent="contactpage">Bezoekadres
+                            <button class="accordion-button" data-parent="contactpage">Visiting address
                                 <!-- svg-plus -->
                                 <svg class="plus-icon" xmlns="http://www.w3.org/2000/svg" height="1em"
                                     viewBox="0 0 512 512">
@@ -5321,7 +5315,7 @@
         <div class="footer-top">
             <div class="container">
                 <div class="col">
-                    <p class="heading">Over Verstegen</p>
+                    <p class="heading">About Verstegen</p>
 
                     <!-- Menu Footer - Verstegen Spices & Sauces -->
 
@@ -5329,15 +5323,15 @@
                         <ul id="menu-menu-footer-verstegen-spices-sauces" class="footer-nav">
                             <li id="menu-item-Assortiment"
                                 class="menu-item menu-item-type-custom menu-item-object-custom menu-item-Assortiment">
-                                <a href="https://verstegen.nl/uitgelicht/">Assortiment</a>
+                                <a href="https://verstegen.nl/uitgelicht/">Assortment</a>
                             </li>
                             <li id="menu-item-Over ons"
                                 class="menu-item menu-item-type-custom menu-item-object-custom menu-item-Over ons">
-                                <a href="https://algemeen.verstegen.nl/over-ons/">Over ons</a>
+                                <a href="https://algemeen.verstegen.nl/over-ons/">About us</a>
                             </li>
                             <li id="menu-item-Duurzaamheid"
                                 class="menu-item menu-item-type-custom menu-item-object-custom menu-item-Duurzaamheid">
-                                <a href="https://algemeen.verstegen.nl/ons-verhaal/duurzaamheid/">Duurzaamheid</a>
+                                <a href="https://algemeen.verstegen.nl/ons-verhaal/duurzaamheid/">Sustainability</a>
                             </li>
                             <li id="menu-item-B Corp"
                                 class="menu-item menu-item-type-custom menu-item-object-custom menu-item-B Corp">
@@ -5347,33 +5341,33 @@
                     </div>
                 </div>
                 <div class="col">
-                    <p class="heading">Informatie</p>
+                    <p class="heading">Information</p>
                     <!-- Menu Footer - Algemene voorwaarden -->
 
                     <div class="footer-menu">
                         <ul id="menu-menu-footer-algemene-voorwaarden" class="footer-nav">
                             <li id="menu-item-Nieuws"
                                 class="menu-item menu-item-type-custom menu-item-object-custom menu-item-Nieuws">
-                                <a href="https://verstegen.nl/kruidenpraat/">Nieuws</a>
+                                <a href="https://verstegen.nl/kruidenpraat/">News</a>
                             </li>
                             <li id="menu-item-Vacatures"
                                 class="menu-item menu-item-type-custom menu-item-object-custom menu-item-Vacatures">
-                                <a href="https://algemeen.verstegen.nl/werken-bij/">Vacatures</a>
+                                <a href="https://algemeen.verstegen.nl/werken-bij/">Vacancies</a>
                             </li>
                             <li id="menu-item-Certificaten"
                                 class="menu-item menu-item-type-custom menu-item-object-custom menu-item-Certificaten">
-                                <a href="https://algemeen.verstegen.nl/certificaten/">Certificaten</a>
+                                <a href="https://algemeen.verstegen.nl/certificaten/">Certificates</a>
                             </li>
                             <li id="menu-item-Kruiden &amp; specerijen"
                                 class="menu-item menu-item-type-custom menu-item-object-custom menu-item-Kruiden &amp; specerijen">
-                                <a href="https://algemeen.verstegen.nl/over-kruiden-en-specerijen/">Kruiden &amp;
-                                    specerijen</a>
+                                <a href="https://algemeen.verstegen.nl/over-kruiden-en-specerijen/">Herbs &amp;
+                                    spices</a>
                             </li>
                         </ul>
                     </div>
                 </div>
                 <div class="col">
-                    <p class="heading">Hulp nodig?</p>
+                    <p class="heading">Need help?</p>
                     <!-- Menu Footer - Klantenservice -->
 
                     <div class="footer-menu">
@@ -5381,8 +5375,8 @@
                             <li id="menu-item-Veelgestelde vragen"
                                 class="menu-item menu-item-type-custom menu-item-object-custom menu-item-Veelgestelde vragen">
                                 <a href="#"
-                                    onclick="window.scrollTo({top: 0}); window.location.reload(); return false;">FAQ en
-                                    Kruidje Chatbot</a>
+                                    onclick="window.scrollTo({top: 0}); window.location.reload(); return false;">FAQ and
+                                    Spicey Chatbot</a>
                             </li>
                             <li id="menu-item-Contact"
                                 class="menu-item menu-item-type-custom menu-item-object-custom menu-item-Contact">
@@ -5390,21 +5384,20 @@
                             </li>
                             <li id="menu-item-Pers contact"
                                 class="menu-item menu-item-type-custom menu-item-object-custom menu-item-Pers contact">
-                                <a href="https://algemeen.verstegen.nl/perscontact/">Pers contact</a>
+                                <a href="https://algemeen.verstegen.nl/perscontact/">Press contact</a>
                             </li>
                             <li id="menu-item-Algemene voorwaarden"
                                 class="menu-item menu-item-type-custom menu-item-object-custom menu-item-Algemene voorwaarden">
-                                <a href="https://algemeen.verstegen.nl/algemene-voorwaarden/">Algemene
-                                    voorwaarden</a>
+                                <a href="https://algemeen.verstegen.nl/algemene-voorwaarden/">Terms and Conditions</a>
                             </li>
                         </ul>
                     </div>
                 </div>
                 <div class="col">
-                    <p class="heading">Verstegen Nieuwsbrief</p>
-                    <p class="subtitle">Blijf op de hoogte van de laatste nieuwtjes!</p>
+                    <p class="heading">Verstegen Newsletter</p>
+                    <p class="subtitle">Stay up to date with the latest news!</p>
 
-                    <a class="btn-style-3" href="https://verstegen.nl/inschrijving-nieuwsbrief/">Inschrijven</a>
+                    <a class="btn-style-3" href="https://verstegen.nl/inschrijving-nieuwsbrief/">Subscribe</a>
                 </div>
             </div>
         </div>

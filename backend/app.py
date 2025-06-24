@@ -221,7 +221,13 @@ def dashboard():
     return send_from_directory(app.template_folder, "dashboard.html")
 
 
+@app.route('/en')
+def english():
+    return render_template('frontend_english.html')
+
 # Data Management
+
+
 @app.route("/data_management")
 def data_management():
     files = os.listdir(app.config['UPLOAD_FOLDER'])
@@ -357,6 +363,31 @@ def speak_dutch_api():
     return jsonify({"error": "No text provided"}), 400
 
 
+@app.route("/feedback", methods=["POST"])
+def feedback():
+    data = request.json
+    chat_id = data.get("chat_id")
+    index = data.get("index")
+    value = data.get("value")  # -1, 0, or 1
+
+    filepath = "chatlogs/sessions.json"
+    if not os.path.exists(filepath):
+        return jsonify({"error": "No chat history found."}), 404
+
+    with open(filepath, "r", encoding="utf-8") as f:
+        all_logs = json.load(f)
+
+    if chat_id not in all_logs or index >= len(all_logs[chat_id]):
+        return jsonify({"error": "Invalid chat_id or index."}), 400
+
+    all_logs[chat_id][index]["feedback"] = value
+
+    with open(filepath, "w", encoding="utf-8") as f:
+        json.dump(all_logs, f, ensure_ascii=False, indent=2)
+
+    return jsonify({"status": "ok"})
+
+
 @app.route("/ask", methods=["POST"])
 def ask():
     if "chat_id" not in session:
@@ -381,15 +412,24 @@ def ask():
 
         log_entry = {
             "user": question,
-            "bot": answer
+            "bot": answer,
+            "feedback": 0
         }
 
         os.makedirs("chatlogs", exist_ok=True)
         filepath = "chatlogs/sessions.json"
 
+        # Always load or create the logs, handle empty or invalid file
         if os.path.exists(filepath):
-            with open(filepath, "r", encoding="utf-8") as f:
-                all_logs = json.load(f)
+            try:
+                with open(filepath, "r", encoding="utf-8") as f:
+                    content = f.read().strip()
+                    if not content:
+                        all_logs = {}
+                    else:
+                        all_logs = json.loads(content)
+            except Exception:
+                all_logs = {}
         else:
             all_logs = {}
 
@@ -402,7 +442,9 @@ def ask():
         with open(filepath, "w", encoding="utf-8") as f:
             json.dump(all_logs, f, ensure_ascii=False, indent=2)
 
-        return jsonify({"answer": answer, "chat_id": chat_id})
+        answer_index = len(all_logs[chat_id]) - 1
+
+        return jsonify({"answer": answer, "chat_id": chat_id, "index": answer_index})
     except Exception as e:
         print(f"UNEXPECTED ERROR IN ASK FUNCTION: {str(e)}")
         return jsonify({"answer": "Er ging iets mis."}), 500
